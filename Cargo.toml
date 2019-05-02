@@ -1,5 +1,5 @@
 [package]
-name = "learn-rust-wasm"
+name = "bomberman-wasm"
 version = "0.1.0"
 authors = ["Victor Lee <victorlee228@gmail.com>"]
 edition = "2018"
@@ -8,5 +8,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = "0.2"
 console_error_panic_hook = { version = "0.1.1", optional = true }
+lazy_static = "1.0"
+rand = { version = "0.6", features = ["wasm-bindgen"] }
+wasm-bindgen = "0.2.42"
