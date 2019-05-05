@@ -1,10 +1,17 @@
+use crate::geometry::Position;
+
 pub struct Bomb {
-    timer: u32,
-    owner_id: u32
+    pub position: Position,
+    pub timer: u32,
+    pub owner_id: u32
 }
 
 impl Bomb {
-    pub fn new(owner_id: u32) -> Bomb {
-        Bomb { timer: 3, owner_id: owner_id }
+    pub fn new(position: Position, owner_id: u32) -> Bomb {
+        Bomb {
+            position: position,
+            timer: 3,
+            owner_id: owner_id
+        }
     }
 }
