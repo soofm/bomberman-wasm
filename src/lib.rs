@@ -1,6 +1,6 @@
 mod controllers;
-mod geometry;
-mod models;
+pub mod geometry;
+pub mod models;
 mod utils;
 
 use std::rc::Rc;

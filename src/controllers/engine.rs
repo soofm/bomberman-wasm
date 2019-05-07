@@ -1,18 +1,17 @@
 use super::Input;
-use crate::models::{Player, Tile, World};
-use crate::geometry::LinearDirection;
-
-const BOMB_TIMER: u32 = 300;
+use crate::models::{Bomb, Player, Tile, World};
+use crate::geometry::{LinearDirection, Position};
 
 #[derive(Default)]
 struct Actions {
-    pub player_id: u32,
+    pub player_id: i32,
     pub direction_x: LinearDirection,
     pub direction_y: LinearDirection,
     pub place_bomb: bool,
 }
 
 pub fn update(input: &Input, world: &mut World) {
+    // get actions
     let mut player_actions: Vec<Actions> = vec![];
     for player in &world.players {
         let actions = match player.is_human {
@@ -22,39 +21,26 @@ pub fn update(input: &Input, world: &mut World) {
         player_actions.push(actions);
     }
 
+    // handle bombs
+    &world.bombs.update(&mut world.tiles);
+
+    // handle player movement and collisions
     for (index, player) in world.players.iter_mut().enumerate() {
         let actions = &player_actions[index];
         let speed = player.speed as f64 / 60.0;
         
-        let col = player.position.0.round() as usize;
-        let row = player.position.1.round() as usize;
-        let index = (row * world.width + col) as usize;
+        let col = player.position.0.round();
+        let row = player.position.1.round();
 
-        if actions.place_bomb && world.tiles[index] == Tile::Empty {
-            world.tiles[index] = Tile::Bomb{ timer: BOMB_TIMER, player_id: player.id };
+        if actions.place_bomb && world.tiles.tile(col as usize, row as usize) == Tile::Empty {
+            world.bombs.add(Bomb::new(player.id, player.bomb_power, (col, row)));
         }
 
         // calculate new position
-        let mut col = player.position.0 + speed * &actions.direction_x.as_f64();
-        let mut row = player.position.1 + speed * &actions.direction_y.as_f64();
+        let x = player.position.0 + speed * &actions.direction_x.as_f64();
+        let y = player.position.1 + speed * &actions.direction_y.as_f64();
         
-        if col < 0.0 { col = 0.0; }
-        else if col > (world.width - 1) as f64 { col = (world.width - 1) as f64; }
-        else if col.trunc() < player.position.0.trunc() {
-            if world.tiles[index - 1] != Tile::Empty { col = player.position.0; }
-        } else if col.trunc() > player.position.0.trunc() {
-            if world.tiles[index + 1] != Tile::Empty { col = player.position.0; }
-        }
-
-        if row < 0.0 { row = 0.0; }
-        else if row > (world.height - 1) as f64 { row = (world.height - 1) as f64; }
-        else if row.trunc() < player.position.1.trunc() {
-            if world.tiles[index - world.width] != Tile::Empty { row = player.position.1 }
-        } else if row.trunc() > player.position.1.trunc() {
-            if world.tiles[index + world.width] != Tile::Empty { row = player.position.1; }
-        }
-
-        player.position = (col, row);
+        player.move_to(x, y, &world.tiles);
     }
 }
 

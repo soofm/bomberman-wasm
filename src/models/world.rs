@@ -1,9 +1,12 @@
-use super::{Tile, Player, Powerup};
+use super::{Tile, Tiles, Bombs, Player, Powerup};
+
+const MAX_BOMBS: usize = 36;
 
 pub struct World {
     pub width: usize,
     pub height: usize,
-    pub tiles: Vec<Tile>,
+    pub tiles: Tiles,
+    pub bombs: Bombs,
     pub players: Vec<Player>,
     pub powerups: Vec<Powerup>,
 }
@@ -38,7 +41,8 @@ impl World {
         World {
             width: width,
             height: height,
-            tiles: tiles,
+            tiles: Tiles::new(tiles, width, height),
+            bombs: Bombs::new(MAX_BOMBS),
             players: players,
             powerups: vec![]
         }
