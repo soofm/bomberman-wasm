@@ -3,5 +3,6 @@
 pub enum Tile {
     Empty,
     HardBlock,
-    SoftBlock
+    SoftBlock,
+    Bomb { timer: u32, player_id: u32 }
 }

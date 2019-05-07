@@ -1,11 +1,9 @@
-use super::{Tile, Bomb, Player, Powerup};
-use crate::geometry::Position;
+use super::{Tile, Player, Powerup};
 
 pub struct World {
-    pub width: u32,
-    pub height: u32,
+    pub width: usize,
+    pub height: usize,
     pub tiles: Vec<Tile>,
-    pub bombs: Vec<Bomb>,
     pub players: Vec<Player>,
     pub powerups: Vec<Powerup>,
 }
@@ -13,8 +11,8 @@ pub struct World {
 impl World {
     pub fn new() -> World {
         // world setup. todo: get this from level
-        let width = 15;
-        let height = 11;
+        let width: usize = 15;
+        let height: usize = 11;
         let tiles = (0..width * height)
             .map(|i| {
                 let x = i % width;
@@ -31,10 +29,10 @@ impl World {
             })
             .collect();
         let players = vec![
-            Player::new(Position::new(0.0, 0.0)),
-            Player::new(Position::new((width - 1) as f64, 0.0)),
-            Player::new(Position::new(0.0, (height - 1) as f64)),
-            Player::new(Position::new((width - 1) as f64, (height - 1) as f64))
+            Player::new(1, (0.0, 0.0), true),
+            Player::new(2, ((width - 1) as f64, 0.0), false),
+            Player::new(3, (0.0, (height - 1) as f64), false),
+            Player::new(4, ((width - 1) as f64, (height - 1) as f64), false)
         ];
         
         World {
@@ -42,7 +40,6 @@ impl World {
             height: height,
             tiles: tiles,
             players: players,
-            bombs: vec![],
             powerups: vec![]
         }
     }

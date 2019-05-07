@@ -1,20 +1,18 @@
 mod controllers;
 mod geometry;
 mod models;
-mod game_state;
 mod utils;
 
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::Mutex;
 use controllers::{engine, render};
-use game_state::GameState;
 use lazy_static::lazy_static;
-use geometry::Direction;
+use models::World;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-use self::controllers::Actions;
+use self::controllers::Input;
 
 lazy_static! {
     static ref DATA: Mutex<GameData> = Mutex::new(GameData::new());
@@ -22,16 +20,16 @@ lazy_static! {
 
 #[wasm_bindgen]
 pub struct GameData {
-    state: GameState,
-    actions: Actions,
+    world: World,
+    input: Input,
 }
 
 #[wasm_bindgen]
 impl GameData {
     pub fn new() -> GameData {
         GameData {
-            state: GameState::new(),
-            actions: Actions::default(),
+            world: World::new(),
+            input: Input::default(),
         }
     }
 }
@@ -51,16 +49,16 @@ pub fn run() -> Result<(), JsValue> {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
     let ctx = Box::new(ctx);
 
-    render::render_bg(&canvas, &ctx, &DATA.lock().unwrap().state.world);
+    render::render_bg(&canvas, &DATA.lock().unwrap().world);
 
     {
         let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
-            let actions = &mut DATA.lock().unwrap().actions;
+            let input = &mut DATA.lock().unwrap().input;
             match event.key().as_ref() {
-                "w" => actions.pressed_up = true,
-                "a" => actions.pressed_left = true,
-                "s" => actions.pressed_down = true,
-                "d" => actions.pressed_right = true,
+                "w" => input.pressed_up = true,
+                "a" => input.pressed_left = true,
+                "s" => input.pressed_down = true,
+                "d" => input.pressed_right = true,
                 _ => {},
             };
         }) as Box<dyn FnMut(_)>);
@@ -69,13 +67,13 @@ pub fn run() -> Result<(), JsValue> {
     }
     {
         let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
-            let actions = &mut DATA.lock().unwrap().actions;
+            let input = &mut DATA.lock().unwrap().input;
             match event.key().as_ref() {
-                "w" => actions.pressed_up = false,
-                "a" => actions.pressed_left = false,
-                "s" => actions.pressed_down = false,
-                "d" => actions.pressed_right = false,
-                "e" => actions.place_bomb = true,
+                "w" => input.pressed_up = false,
+                "a" => input.pressed_left = false,
+                "s" => input.pressed_down = false,
+                "d" => input.pressed_right = false,
+                "e" => input.place_bomb = true,
                 _ => {},
             };
         }) as Box<dyn FnMut(_)>);
@@ -87,9 +85,10 @@ pub fn run() -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        let data = &mut DATA.lock().unwrap();
-        engine::update(data);
-        render::render_frame(&ctx, &data.state.world);
+        let data: &mut GameData = &mut DATA.lock().unwrap();
+        engine::update(&data.input, &mut data.world);
+        data.input.place_bomb = false;
+        render::render_frame(&ctx, &data.world);
         
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<FnMut()>));

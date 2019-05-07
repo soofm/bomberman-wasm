@@ -1,7 +1,10 @@
 [package]
 name = "bomberman-wasm"
+description = "Bomberman clone with Rust-Wasm"
 version = "0.1.0"
 authors = ["Victor Lee <victorlee228@gmail.com>"]
+repository = "https://github.com/soofm/bomberman-wasm.git"
+license = "MIT"
 edition = "2018"
 
 [lib]
