@@ -6,7 +6,7 @@ mod utils;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::Mutex;
-use controllers::{engine, render};
+use controllers::{Engine, render};
 use lazy_static::lazy_static;
 use models::World;
 use wasm_bindgen::prelude::*;
@@ -37,6 +37,8 @@ impl GameData {
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
     utils::set_panic_hook();
+
+    let mut engine = Engine::new();
 
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("game-canvas").unwrap();
@@ -86,7 +88,7 @@ pub fn run() -> Result<(), JsValue> {
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         let data: &mut GameData = &mut DATA.lock().unwrap();
-        engine::update(&data.input, &mut data.world);
+        engine.update(&data.input, &mut data.world);
         data.input.place_bomb = false;
         render::render_frame(&ctx, &data.world);
         

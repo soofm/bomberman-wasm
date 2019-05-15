@@ -1,10 +1,10 @@
-use crate::models::{BombState, Tile, World};
+use crate::models::{BombState, Tile, World, PowerupType};
 
 const CELL_SIZE: u32 = 50;
 
 pub fn render_bg(canvas: &web_sys::HtmlCanvasElement, world: &World) {
-    let render_width = world.width as u32 * CELL_SIZE;
-    let render_height = world.height as u32 * CELL_SIZE;
+    let render_width = world.tiles.width as u32 * CELL_SIZE;
+    let render_height = world.tiles.height as u32 * CELL_SIZE;
 
     canvas.set_width(render_width);
     canvas.set_height(render_height);
@@ -21,16 +21,16 @@ fn render_tiles(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
 
     draw_empty(
         ctx,
-        (world.width as u32 * CELL_SIZE) as f64,
-        (world.height as u32 * CELL_SIZE) as f64
+        (world.tiles.width as u32 * CELL_SIZE) as f64,
+        (world.tiles.height as u32 * CELL_SIZE) as f64
     );
 
-    for row in 0..world.height {
-        for col in 0..world.width {
+    for row in 0..world.tiles.height {
+        for col in 0..world.tiles.width {
             let x = (col as u32 * CELL_SIZE) as f64;
             let y = (row as u32 * CELL_SIZE) as f64;
 
-            match tiles.tile(col as usize, row as usize) {
+            match tiles.get(col, row) {
                 Tile::Empty => {},
                 Tile::SoftBlock => {
                     draw_soft_block(ctx, x, y);
@@ -38,6 +38,9 @@ fn render_tiles(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
                 Tile::HardBlock => {
                     draw_hard_block(ctx, x, y);
                 },
+                Tile::Powerup(powerup) => {
+                    draw_powerup(ctx, x, y, powerup);
+                }
             };
         }
     }
@@ -82,12 +85,90 @@ fn draw_hard_block(ctx: &web_sys::CanvasRenderingContext2d, x: f64, y: f64) {
     ctx.set_fill_style(&"#000".into());
     ctx.fill_rect(x, y, size, size);
     ctx.set_fill_style(&"#333".into());
-    ctx.fill_rect(x + 1.0, y + 1.0, size - 2.0, size - 2.0);
+    ctx.fill_rect(x + 3.0, y + 3.0, size - 6.0, size - 6.0);
+}
+
+fn draw_powerup(ctx: &web_sys::CanvasRenderingContext2d, x: f64, y: f64, powerup: PowerupType) {
+    let size = CELL_SIZE as f64;
+    ctx.set_line_width(3.0);
+    if powerup == PowerupType::BombNumber {
+        ctx.begin_path();
+        ctx.set_fill_style(&"#4A304A".into());
+        ctx.arc(
+            x + (0.5 * size),
+            y + (0.5 * size),
+            15.0,
+            0.0,
+            2.0 * std::f64::consts::PI
+        ).unwrap();
+        ctx.close_path();
+        ctx.fill();
+        ctx.begin_path();
+        ctx.set_stroke_style(&"#FFF".into());
+        ctx.move_to(x + (0.5 * size), y + (0.42 * size));
+        ctx.line_to(x + (0.5 * size), y + (0.58 * size));
+        ctx.move_to(x + (0.42 * size), y + (0.5 * size));
+        ctx.line_to(x + (0.58 * size), y + (0.5 * size));
+        ctx.stroke();
+        ctx.close_path();
+    } else if powerup == PowerupType::BombPower {
+        ctx.begin_path();
+        ctx.set_fill_style(&"#FF8C00".into());
+        ctx.arc(
+            x + (0.5 * size),
+            y + (0.5 * size),
+            15.0,
+            0.0,
+            2.0 * std::f64::consts::PI
+        ).unwrap();
+        ctx.close_path();
+        ctx.fill();
+        ctx.begin_path();
+        ctx.set_stroke_style(&"#FFF".into());
+        ctx.move_to(x + (0.5 * size), y + (0.42 * size));
+        ctx.line_to(x + (0.5 * size), y + (0.58 * size));
+        ctx.move_to(x + (0.46 * size), y + (0.46 * size));
+        ctx.line_to(x + (0.5 * size), y + (0.42 * size));
+        ctx.line_to(x + (0.54 * size), y + (0.46 * size));
+        ctx.stroke();
+        ctx.close_path();
+    } else if powerup == PowerupType::Speed {
+        ctx.begin_path();
+        ctx.set_stroke_style(&"#32CD32".into());
+        ctx.move_to(x + (0.3 * size), y + (0.33 * size));
+        ctx.line_to(x + (0.7 * size), y + (0.33 * size));
+        ctx.move_to(x + (0.3 * size), y + (0.5 * size));
+        ctx.line_to(x + (0.7 * size), y + (0.5 * size));
+        ctx.move_to(x + (0.3 * size), y + (0.67 * size));
+        ctx.line_to(x + (0.7 * size), y + (0.67 * size));
+        ctx.stroke();
+        ctx.close_path();
+    } else if powerup == PowerupType::Boots {
+        ctx.begin_path();
+        ctx.set_stroke_style(&"#000".into());
+        ctx.set_fill_style(&"#654321".into());
+        ctx.move_to(x + (0.38 * size), y + (0.2 * size));
+        ctx.line_to(x + (0.58 * size), y + (0.2 * size));
+        ctx.line_to(x + (0.58 * size), y + (0.44 * size));
+        ctx.arc(
+            x + (0.58 * size),
+            y + (0.6 * size),
+            0.16 * size,
+            1.5 * std::f64::consts::PI,
+            0.5 * std::f64::consts::PI
+        ).unwrap();
+        ctx.line_to(x + (0.38 * size), y + (0.76 * size));
+        ctx.line_to(x + (0.38 * size), y + (0.2 * size));
+        ctx.stroke();
+        ctx.close_path();
+        ctx.fill();
+    }
+    ctx.set_line_width(1.0);
 }
 
 fn render_players(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
-    for player in world.players.iter() {
-        if player.id > 4 { continue; }
+    let size = CELL_SIZE as f64;
+    for player in world.players.get() {
         let color = match player.id {
             1 => "#F00",
             2 => "#0F0",
@@ -99,8 +180,8 @@ fn render_players(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
         ctx.begin_path();
         ctx.set_fill_style(&color.into());
         ctx.arc(
-            (player.position.0 + 0.5) * CELL_SIZE as f64,
-            (player.position.1 + 0.5) * CELL_SIZE as f64,
+            (player.position.0 + 0.5) * size,
+            (player.position.1 + 0.5) * size,
             20.0,
             0.0,
             2.0 * std::f64::consts::PI
@@ -125,7 +206,6 @@ fn render_bombs(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
 
         match bomb.state {
             BombState::Armed => {
-                //ctx.set_stroke_style(&"#000".into());
                 ctx.begin_path();
                 ctx.move_to(x + (0.25 * size), y + (0.25 * size));
                 ctx.line_to(x + (0.41 * size), y + (0.41 * size));

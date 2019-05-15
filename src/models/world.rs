@@ -1,30 +1,26 @@
-use super::{Tile, Tiles, Bombs, Player, Powerup};
+use super::{Bombs, Player, Players, Tile, Tiles};
 
 const MAX_BOMBS: usize = 36;
 
 pub struct World {
-    pub width: usize,
-    pub height: usize,
-    pub tiles: Tiles,
     pub bombs: Bombs,
-    pub players: Vec<Player>,
-    pub powerups: Vec<Powerup>,
+    pub players: Players,
+    pub tiles: Tiles,
 }
 
 impl World {
     pub fn new() -> World {
         // world setup. todo: get this from level
-        let width: usize = 15;
-        let height: usize = 11;
+        let width: i32 = 15;
+        let height: i32 = 11;
         let tiles = (0..width * height)
             .map(|i| {
                 let x = i % width;
                 let y = i / width;
                 if y % 2 == 1 && x % 2 == 1 {
                     Tile::HardBlock
-                } else if (x == 0 || x == width - 1) && (y < 3 || height - y <= 3) {
-                    Tile::Empty
-                } else if (y == 0 || y == height - 1) && (x < 3 || width - x <= 3) {
+                } else if (x == 0 || x == width - 1) && (y < 3 || height - y <= 3) ||
+                          (y == 0 || y == height - 1) && (x < 3 || width - x <= 3) {
                     Tile::Empty
                 } else {
                     Tile::SoftBlock
@@ -39,12 +35,9 @@ impl World {
         ];
         
         World {
-            width: width,
-            height: height,
             tiles: Tiles::new(tiles, width, height),
             bombs: Bombs::new(MAX_BOMBS),
-            players: players,
-            powerups: vec![]
+            players: Players::new(players),
         }
     }
 }

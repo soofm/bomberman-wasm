@@ -1,46 +1,35 @@
 use super::Input;
-use crate::models::{Bomb, Player, Tile, World};
-use crate::geometry::{LinearDirection, Position};
+use crate::models::{Actions, Player, World};
+use crate::geometry::LinearDirection;
 
-#[derive(Default)]
-struct Actions {
-    pub player_id: i32,
-    pub direction_x: LinearDirection,
-    pub direction_y: LinearDirection,
-    pub place_bomb: bool,
+pub struct Engine {
+    rng: rand::rngs::ThreadRng,
 }
 
-pub fn update(input: &Input, world: &mut World) {
-    // get actions
-    let mut player_actions: Vec<Actions> = vec![];
-    for player in &world.players {
-        let actions = match player.is_human {
-            true => eval_input(player, input),
-            false => eval_cpu_actions(player, world)
-        };
-        player_actions.push(actions);
+impl Engine {
+    pub fn new() -> Self {
+        let rng = rand::thread_rng();
+        Engine {
+            rng,
+        }
     }
 
-    // handle bombs
-    &world.bombs.update(&mut world.tiles);
-
-    // handle player movement and collisions
-    for (index, player) in world.players.iter_mut().enumerate() {
-        let actions = &player_actions[index];
-        let speed = player.speed as f64 / 60.0;
-        
-        let col = player.position.0.round();
-        let row = player.position.1.round();
-
-        if actions.place_bomb && world.tiles.tile(col as usize, row as usize) == Tile::Empty {
-            world.bombs.add(Bomb::new(player.id, player.bomb_power, (col, row)));
+    pub fn update(&mut self, input: &Input, world: &mut World) {
+        // get actions
+        let mut player_actions: Vec<Actions> = vec![];
+        for player in world.players.get() {
+            let actions = match player.is_human {
+                true => eval_input(player, input),
+                false => eval_cpu_actions(player, world)
+            };
+            player_actions.push(actions);
         }
 
-        // calculate new position
-        let x = player.position.0 + speed * &actions.direction_x.as_f64();
-        let y = player.position.1 + speed * &actions.direction_y.as_f64();
-        
-        player.move_to(x, y, &world.tiles);
+        // handle player movement and collisions
+        &world.players.update(player_actions, &mut world.bombs, &mut world.tiles);
+
+        // handle bombs
+        &world.bombs.update(&mut world.players, &mut world.tiles, &mut self.rng);
     }
 }
 
