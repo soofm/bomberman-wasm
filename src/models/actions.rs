@@ -1,9 +1,8 @@
-use crate::geometry::LinearDirection;
+use crate::geometry::Direction;
 
 #[derive(Default)]
 pub struct Actions {
     pub player_id: i32,
-    pub direction_x: LinearDirection,
-    pub direction_y: LinearDirection,
+    pub direction: Option<Direction>,
     pub place_bomb: bool,
 }

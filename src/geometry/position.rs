@@ -1,62 +1,84 @@
 use crate::models::Tiles;
+use super::{CORNER, Direction};
 
 pub trait Position {
     fn position(&self) -> (f64, f64);
     fn set_position(&mut self, x: f64, y: f64);
-    fn move_to(&mut self, x: f64, y: f64, tiles: &Tiles) {
-        let (ox, oy) = self.position();
-        let adj_x: f64;
-        let adj_y: f64;
-        let col: i32;
-        let row: i32;
-        let mut res: (f64, f64) = (x, y);
+    fn move_in_direction(&mut self, dir: Direction, dist: f64, tiles: &Tiles) {
+        let (x, y) = self.position();
+        let target: f64;
+        let index: i32;
+        let adjusted: f64;
+        let step: bool;
 
         // calculate crossed boundaries and store adjusted positions for later
-        if x.floor() < ox.floor() {
-            adj_x = ox.floor();
-            col = x.floor() as i32;
-        } else if x.ceil() > ox.ceil() {
-            adj_x = ox.ceil();
-            col = x.ceil() as i32;
-        } else {
-            adj_x = x;
-            col = x.floor() as i32;
-        }
+        let res = match dir {
+            Direction::Left | Direction::Right => {
+                if dir == Direction::Left {
+                    target = x - dist;
+                    index = target.floor() as i32;
+                    adjusted = x.floor();
+                    step = target.floor() < x.floor();
+                } else {
+                    target = x + dist;
+                    index = target.ceil() as i32;
+                    adjusted = x.ceil();
+                    step = target.ceil() > x.ceil();
+                }    
 
-        if y.floor() < oy.floor() {
-            adj_y = oy.floor();
-            row = y.floor() as i32;
-        } else if y.ceil() > oy.ceil() {
-            adj_y = oy.ceil();
-            row = y.ceil() as i32;
-        } else {
-            adj_y = y;
-            row = y.floor() as i32;
-        }
+                match step {
+                    false => (target, y),
+                    true => {
+                        let yi = y.floor() as i32;
+                        let yf = y.fract();
+                        let blocked_up = tiles.is_blocked(index, yi);
+                        let blocked_down = tiles.is_blocked(index, yi + 1);
+                        if blocked_up && blocked_down {
+                            (adjusted, y)
+                        } else if blocked_up {
+                            if yf < 1.0 - CORNER { (adjusted, y) } else { (target, y.ceil()) }
+                        } else if blocked_down {
+                            if yf > CORNER { (adjusted, y) } else { (target, y.floor()) }
+                        } else {
+                            (target, y)
+                        }
+                    }
+                }
+            },
+            Direction::Up | Direction::Down => {
+                if dir == Direction::Up {
+                    target = y - dist;
+                    index = target.floor() as i32;
+                    adjusted = y.floor();
+                    step = target.floor() < y.floor();
+                } else {
+                    target = y + dist;
+                    index = target.ceil() as i32;
+                    adjusted = y.ceil();
+                    step = target.ceil() > y.ceil();
+                }
 
-        if adj_x != x && adj_y != y {
-            let ocol = if adj_x < x { col - 1 } else { col + 1 };
-            let orow = if adj_y < y { row - 1} else { row + 1 };
+                match step {
+                    false => (x, target),
+                    true => {
+                        let xi = x.floor() as i32;
+                        let xf = x.fract();
+                        let blocked_left = tiles.is_blocked(xi, index);
+                        let blocked_right = tiles.is_blocked(xi + 1, index);
+                        if blocked_left && blocked_right {
+                            (x, adjusted)
+                        } else if blocked_left {
+                            if xf < 1.0 - CORNER { (x, adjusted) } else { (x.ceil(), target) }
+                        } else if blocked_right {
+                            if xf > CORNER { (x, adjusted) } else { (x.floor(), target) }
+                        } else {
+                            (x, target)
+                        }
+                    }
+                }
+            },
+        };
 
-            let mut blocked_x = tiles.is_blocked(col, orow);
-            let mut blocked_y = tiles.is_blocked(ocol, row);
-
-            if !blocked_x && !blocked_y && tiles.is_blocked(col, row) {
-                blocked_x = true;
-                blocked_y = true;
-            }
-
-            res = (if blocked_x { adj_x } else { x }, if blocked_y { adj_y } else { y });
-        } else if adj_x != x {
-            if tiles.is_blocked(col, row) || (y != y.trunc() && tiles.is_blocked(col, row + 1)) {
-                res = (adj_x, y);
-            }
-        } else if adj_y != y {
-            if tiles.is_blocked(col, row) || (x != x.trunc() && tiles.is_blocked(col + 1, row)) {
-                res = (x, adj_y);
-            }
-        }
-        
         self.set_position(res.0, res.1);
     }
 }

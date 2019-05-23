@@ -31,7 +31,6 @@ fn render_tiles(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
             let y = (row as u32 * CELL_SIZE) as f64;
 
             match tiles.get(col, row) {
-                Tile::Empty => {},
                 Tile::SoftBlock => {
                     draw_soft_block(ctx, x, y);
                 },
@@ -40,7 +39,8 @@ fn render_tiles(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
                 },
                 Tile::Powerup(powerup) => {
                     draw_powerup(ctx, x, y, powerup);
-                }
+                },
+                _ => {}
             };
         }
     }
@@ -168,7 +168,9 @@ fn draw_powerup(ctx: &web_sys::CanvasRenderingContext2d, x: f64, y: f64, powerup
 
 fn render_players(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
     let size = CELL_SIZE as f64;
-    for player in world.players.get() {
+    for player in world.players.iter() {
+        let x = player.position.0 * size;
+        let y = player.position.1 * size;
         let color = match player.id {
             1 => "#F00",
             2 => "#0F0",
@@ -177,23 +179,30 @@ fn render_players(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
             _ => "#000",
         };
 
-        ctx.begin_path();
-        ctx.set_fill_style(&color.into());
-        ctx.arc(
-            (player.position.0 + 0.5) * size,
-            (player.position.1 + 0.5) * size,
-            20.0,
-            0.0,
-            2.0 * std::f64::consts::PI
-        ).unwrap();
-        ctx.close_path();
-        ctx.fill();
+        if player.is_alive {
+            ctx.begin_path();
+            ctx.set_fill_style(&color.into());
+            ctx.arc(x + (0.5 * size), y + (0.5 * size), 20.0, 0.0, 2.0 * std::f64::consts::PI).unwrap();
+            ctx.close_path();
+            ctx.fill();
+        } else {
+            ctx.begin_path();
+            ctx.set_line_width(3.0);
+            ctx.set_stroke_style(&color.into());
+            ctx.move_to(x + (0.2 * size), y + (0.2 * size));
+            ctx.line_to(x + (0.8 * size), y + (0.8 * size));
+            ctx.move_to(x + (0.8 * size), y + (0.2 * size));
+            ctx.line_to(x + (0.2 * size), y + (0.8 * size));
+            ctx.stroke();
+            ctx.set_line_width(1.0);
+            ctx.close_path();
+        }
     }
 }
 
 fn render_bombs(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
     let size = CELL_SIZE as f64;
-    for bomb in world.bombs.get() {
+    for bomb in world.bombs.iter() {
         let color = match bomb.player_id {
                 1 => "#A00",
                 2 => "#0A0",
@@ -213,13 +222,7 @@ fn render_bombs(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
                 ctx.close_path();
                 ctx.begin_path();
                 ctx.set_fill_style(&color.into());
-                ctx.arc(
-                    x + (0.6 * size),
-                    y + (0.6 * size),
-                    15.0,
-                    0.0,
-                    2.0 * std::f64::consts::PI
-                ).unwrap();
+                ctx.arc(x + (0.6 * size), y + (0.6 * size), 15.0, 0.0, 2.0 * std::f64::consts::PI).unwrap();
                 ctx.close_path();
                 ctx.fill();
             },

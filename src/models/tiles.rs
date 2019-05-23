@@ -21,8 +21,10 @@ impl Tiles {
 
     pub fn is_blocked(&self, col: i32, row: i32) -> bool {
         if col < 0 || row < 0 || col >= self.width || row >= self.height { return true; }
-        let tile = self.get(col, row);
-        tile == Tile::SoftBlock || tile == Tile::HardBlock
+        match self.get(col, row) {
+            Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
+            _ => false
+        }
     }
 
     pub fn set(&mut self, col: i32, row: i32, value: Tile) {

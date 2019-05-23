@@ -1,4 +1,4 @@
-mod controllers;
+pub mod controllers;
 pub mod geometry;
 pub mod models;
 mod utils;
@@ -7,6 +7,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::Mutex;
 use controllers::{Engine, render};
+use geometry::Direction;
 use lazy_static::lazy_static;
 use models::World;
 use wasm_bindgen::prelude::*;
@@ -57,10 +58,10 @@ pub fn run() -> Result<(), JsValue> {
         let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
             let input = &mut DATA.lock().unwrap().input;
             match event.key().as_ref() {
-                "w" => input.pressed_up = true,
-                "a" => input.pressed_left = true,
-                "s" => input.pressed_down = true,
-                "d" => input.pressed_right = true,
+                "w" => { input.pressed_up = true; input.last_direction = Some(Direction::Up); },
+                "a" => { input.pressed_left = true; input.last_direction = Some(Direction::Left); },
+                "s" => { input.pressed_down = true; input.last_direction = Some(Direction::Down); },
+                "d" => { input.pressed_right = true; input.last_direction = Some(Direction::Right); },
                 _ => {},
             };
         }) as Box<dyn FnMut(_)>);

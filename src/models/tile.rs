@@ -13,5 +13,6 @@ pub enum Tile {
     Empty,
     HardBlock,
     SoftBlock,
+    Bomb,
     Powerup(PowerupType),
 }
