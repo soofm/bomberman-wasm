@@ -2,13 +2,14 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require('path');
 
+const public = path.resolve(__dirname, "public");
 const dist = path.resolve(__dirname, "dist");
 
 module.exports = {
-  entry: "./index.js",
+  entry: path.resolve(__dirname, "src/index.js"),
   output: {
     path: dist,
-    filename: "index.bundle.js",
+    filename: "[name].bundle.js",
   },
   devServer: {
       contentBase: dist
@@ -17,7 +18,8 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-        template: "index.html"
+        template: path.resolve(public, "index.html"),
+        favicon: path.resolve(public, "favicon.ico")
     })
   ],
 };

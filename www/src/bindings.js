@@ -1,0 +1,1 @@
+import "@victorlee/bomberman-wasm";
