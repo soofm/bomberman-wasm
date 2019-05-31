@@ -7,11 +7,11 @@ mod test {
     use bomberman_wasm::models::{Bomb, Player, Tile, Tiles};
 
     const MAX_BOMBS: usize = 36;
-    const BOMB_LIFE: i32 = 210;
+    const BOMB_LIFE: i32 = 210;    
 
     #[test]
     fn bomb_can_destroy_soft_blocks() {
-        let mut players = vec![Player::new(1, (0.0, 0.0), false)];
+        let mut players = [ Player::new(1, (0.0, 0.0)), Player::new(2, (0.0, 0.0)), Player::new(3, (0.0, 0.0)), Player::new(4, (0.0, 0.0)) ];
         let mut rng = StepRng::new(0, 0);
         let tiles = (0..9).map(|i| {
             if i % 2 == 1 { Tile::SoftBlock } else { Tile::Empty } 
@@ -28,7 +28,7 @@ mod test {
 
     #[test]
     fn bomb_cannot_destroy_hard_blocks() {
-        let mut players = vec![Player::new(1, (0.0, 0.0), false)];
+        let mut players = [ Player::new(1, (0.0, 0.0)), Player::new(2, (0.0, 0.0)), Player::new(3, (0.0, 0.0)), Player::new(4, (0.0, 0.0)) ];
         let mut rng = StepRng::new(0, 0);
         let tiles = (0..9).map(|i| {
             if i % 2 == 1 { Tile::HardBlock } else { Tile::Empty } 
@@ -45,7 +45,7 @@ mod test {
 
     #[test]
     fn bomb_works_at_corners() {
-        let mut players = vec![Player::new(1, (0.0, 0.0), false)];
+        let mut players = [ Player::new(1, (0.0, 0.0)), Player::new(2, (0.0, 0.0)), Player::new(3, (0.0, 0.0)), Player::new(4, (0.0, 0.0)) ];
         let mut rng = StepRng::new(0, 0);
         let tiles = (0..9).map(|i| {
             if i % 2 == 1 { Tile::SoftBlock } else { Tile::Empty } 
@@ -62,7 +62,7 @@ mod test {
 
     #[test]
     fn bomb_does_not_destroy_multiple_blocks() {
-        let mut players = vec![Player::new(1, (0.0, 0.0), false)];
+        let mut players = [ Player::new(1, (0.0, 0.0)), Player::new(2, (0.0, 0.0)), Player::new(3, (0.0, 0.0)), Player::new(4, (0.0, 0.0)) ];
         let mut rng = StepRng::new(0, 0);
         let tiles = (0..9).map(|i| {
             if i == 1 || i == 2 { Tile::SoftBlock } else { Tile::Empty } 
@@ -78,7 +78,7 @@ mod test {
 
     #[test]
     fn bomb_range_is_equal_to_power() {
-        let mut players = vec![Player::new(1, (0.0, 0.0), false)];
+        let mut players = [ Player::new(1, (0.0, 0.0)), Player::new(2, (0.0, 0.0)), Player::new(3, (0.0, 0.0)), Player::new(4, (0.0, 0.0)) ];
         let mut rng = StepRng::new(0, 0);
         let tiles = (0..9).map(|i| {
             if i == 2 { Tile::SoftBlock } else { Tile::Empty }

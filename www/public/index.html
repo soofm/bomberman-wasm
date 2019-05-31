@@ -5,6 +5,19 @@
     <title>Bomberman in Rust and Wasm</title>
   </head>
   <body>
-    <canvas id="game-canvas"></div>
+    <div class="wrapper">
+      <div id="main">
+        <div id="menu">
+          <h1>Bomberman</h1>
+          <ul class="menu-options">
+            <li><a href="#" id="one-player" class="button">ONE PLAYER</a></li>
+            <li><a href="#" id="two-player" class="button">TWO PLAYERS</a></li>
+          </ul>
+        </div>
+      </div>
+      <canvas id="canvas" class="game-canvas" tabindex="-1" width="750" height="550">
+        <p>Your browser is not supported.</p>
+      </canvas>
+    </div>
   </body>
 </html>

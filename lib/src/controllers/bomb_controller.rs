@@ -12,7 +12,7 @@ pub fn add_bomb(bombs: &mut Vec<Bomb>, player: &Player, tiles: &mut Tiles) {
     tiles.set(position.0 as i32, position.1 as i32, Tile::Bomb);
 }
 
-pub fn update<R: RngCore>(bombs: &mut Vec<Bomb>, players: &mut Vec<Player>, tiles: &mut Tiles, rng: &mut R) {
+pub fn update<R: RngCore>(bombs: &mut Vec<Bomb>, players: &mut [Player; 4], tiles: &mut Tiles, rng: &mut R) {
     for bomb in bombs.iter_mut() {
         update_bomb(bomb, players, tiles, rng);
     }
@@ -22,7 +22,7 @@ pub fn update<R: RngCore>(bombs: &mut Vec<Bomb>, players: &mut Vec<Player>, tile
     }
 }
 
-fn update_bomb<R: RngCore>(bomb: &mut Bomb, players: &mut Vec<Player>, tiles: &mut Tiles, rng: &mut R) {
+fn update_bomb<R: RngCore>(bomb: &mut Bomb, players: &mut [Player; 4], tiles: &mut Tiles, rng: &mut R) {
     bomb.timer += 1;
     match bomb.timer {
         0 => { bomb.state = BombState::Armed; },

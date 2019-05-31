@@ -6,19 +6,28 @@ const dist = path.resolve(__dirname, "dist");
 
 module.exports = {
   mode: "development",
-  entry: path.resolve(__dirname, "src/index.js"),
+  entry: path.resolve(__dirname, "src/index.ts"),
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+        test: /\.ts$/,
+        use: [ { loader: "ts-loader" } ]
       },
+      {
+        test: /\.css$/,
+        use: [ { loader: "style-loader" }, { loader: "css-loader" } ]
+      },
+      {
+        test: /\.svg$/,
+        use: [ { loader: "url-loader", options: { limit: 4096 }} ]
+      }
     ],
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src")
-    }
+    },
+    extensions: [ ".wasm", ".ts", ".js" ]
   },
   output: {
     path: dist,

@@ -4,12 +4,12 @@ const MAX_BOMBS: usize = 36;
 
 pub struct World {
     pub bombs: Vec<Bomb>,
-    pub players: Vec<Player>,
+    pub players: [Player; 4],
     pub tiles: Tiles,
 }
 
 impl World {
-    pub fn new() -> World {
+    pub fn new() -> Self {
         // world setup. todo: get this from level
         let width: i32 = 15;
         let height: i32 = 11;
@@ -27,11 +27,11 @@ impl World {
                 }
             })
             .collect();
-        let players = vec![
-            Player::new(1, (0.0, 0.0), true),
-            Player::new(2, ((width - 1) as f64, 0.0), false),
-            Player::new(3, (0.0, (height - 1) as f64), false),
-            Player::new(4, ((width - 1) as f64, (height - 1) as f64), false)
+        let players = [
+            Player::new(1, (0.0, 0.0)),
+            Player::new(2, ((width - 1) as f64, 0.0)),
+            Player::new(3, (0.0, (height - 1) as f64)),
+            Player::new(4, ((width - 1) as f64, (height - 1) as f64))
         ];
         
         World {

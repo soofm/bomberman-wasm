@@ -2,14 +2,6 @@ use crate::models::{BombState, Tile, World, PowerupType};
 
 const CELL_SIZE: u32 = 50;
 
-pub fn render_bg(canvas: &web_sys::HtmlCanvasElement, world: &World) {
-    let render_width = world.tiles.width as u32 * CELL_SIZE;
-    let render_height = world.tiles.height as u32 * CELL_SIZE;
-
-    canvas.set_width(render_width);
-    canvas.set_height(render_height);
-}
-
 pub fn render_frame(ctx: &web_sys::CanvasRenderingContext2d, world: &World) {
     render_tiles(ctx, world);
     render_players(ctx, world);

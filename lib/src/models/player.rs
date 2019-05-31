@@ -9,7 +9,6 @@ pub struct Player {
     pub id: i32,
     pub position: (f64, f64),
     pub is_alive: bool,
-    pub is_human: bool,
     pub speed: i32,
     pub bomb_number: i32,
     pub bomb_power: i32,
@@ -17,12 +16,11 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(id: i32, position: (f64, f64), is_human: bool) -> Player {
+    pub fn new(id: i32, position: (f64, f64)) -> Self {
         Player {
             id: id,
             position: position,
             is_alive: true,
-            is_human: is_human,
             speed: 5,
             bomb_number: 1,
             bomb_power: 1,
