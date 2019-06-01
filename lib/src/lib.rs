@@ -31,7 +31,7 @@ impl GameEngine {
         }
     }    
     
-    pub fn tick(&mut self, input: &[i32]) {
+    pub fn tick(&mut self, input: &[i32]) -> i32 {
         let mut safe_input: [i32; 4] = Default::default();
         safe_input.copy_from_slice(input);
 
@@ -50,10 +50,27 @@ impl GameEngine {
 
         // handle bombs
         bomb_controller::update(&mut world.bombs, &mut world.players, &mut world.tiles, &mut self.rng);
+
+        let mut winner_id: i32 = -1;
+        for player in world.players.iter() {
+            if player.is_alive {
+                if winner_id > 0 {
+                    winner_id = 0;
+                    break;
+                }
+                winner_id = player.id;
+            }
+        }
+        winner_id
     }
 
     pub fn draw(&self, ctx: &web_sys::CanvasRenderingContext2d) {
         let world: &World = &WORLD.lock().unwrap();
         render::render_frame(ctx, world);
+    }
+    
+    pub fn reset(&self) {
+        let world: &mut World = &mut WORLD.lock().unwrap();
+        *world = World::new();
     }
 }

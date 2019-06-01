@@ -19,8 +19,18 @@ export const PlayerTwoInputOptions: InputOption = {
 
 export class InputController {
   inputStates: InputState[] = [];
+  private kdEventListener: ((event: KeyboardEvent) => void) | undefined;
+  private kuEventListener: ((event: KeyboardEvent) => void) | undefined;
   
   registerInputs(canvas: HTMLCanvasElement, inputOptions: InputOption[]) {
+    if (this.kdEventListener) {
+      canvas.removeEventListener("keydown", this.kdEventListener);
+    }
+    if (this.kuEventListener) {
+      canvas.removeEventListener("keyup", this.kuEventListener);
+    }
+    this.inputStates = [];
+
     const inputMapping = new Map<string, { id: number, key: InputType }>()
     for (let id = 0; id < 4; id++) {
       const inputOption = inputOptions[id]
@@ -35,20 +45,23 @@ export class InputController {
         this.inputStates.push(new InputState(false))
       }
     }
-    canvas.addEventListener("keydown", (event: KeyboardEvent) => {
+
+    this.kdEventListener = (event: KeyboardEvent) => {
       const value = inputMapping.get(event.key)
       if (typeof value !== "undefined") {
         this.inputStates[value.id].handleInput(true, value.key);
       }
       event.preventDefault();
-    })
-    canvas.addEventListener("keyup", (event: KeyboardEvent) => {
+    };
+    canvas.addEventListener("keydown", this.kdEventListener);
+    this.kuEventListener = (event: KeyboardEvent) => {
       const value = inputMapping.get(event.key)
       if (typeof value !== "undefined") {
         this.inputStates[value.id].handleInput(false, value.key);
       }
       event.preventDefault();
-    })
+    }
+    canvas.addEventListener("keyup", this.kuEventListener);
   }
 
   get inputValues() {
