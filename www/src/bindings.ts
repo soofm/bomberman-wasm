@@ -26,7 +26,7 @@ const renderLoop = () => {
 }
 
 const startGame = () => {
-  if (initMenu.style.visibility === "visible") {
+  if (initMenu.style.visibility !== "hidden") {
     initMenu.style.visibility = "hidden"
   } else {
     gameEngine.reset()
