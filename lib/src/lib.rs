@@ -4,7 +4,7 @@ pub mod models;
 mod utils;
 
 use std::sync::Mutex;
-use controllers::{bomb_controller, player_controller, render};
+use controllers::{ai, input, render, state};
 use models::{Actions, World};
 use lazy_static::lazy_static;
 use wasm_bindgen::prelude::*;
@@ -33,23 +33,21 @@ impl GameEngine {
     
     pub fn tick(&mut self, input: &[i32]) -> i32 {
         let mut safe_input: [i32; 4] = Default::default();
-        safe_input.copy_from_slice(input);
+        for i in 0..4 {
+            safe_input[i] = input[i];
+        }
 
         let world: &mut World = &mut WORLD.lock().unwrap();
         let mut actions: [Actions; 4] = Default::default();
         for (index, (player, &input)) in world.players.iter().zip(input.iter()).enumerate() {
             actions[index] = if input >= 0 {
-                player_controller::eval_input(player, input)
+                input::eval(player, input)
             } else {
-                player_controller::eval_cpu_actions(player, world)
+                ai::eval(player, world)
             };
         }
-
-        // handle player movement and collisions
-        player_controller::update(&mut world.bombs, &mut world.players, &mut world.tiles, actions);
-
-        // handle bombs
-        bomb_controller::update(&mut world.bombs, &mut world.players, &mut world.tiles, &mut self.rng);
+        
+        state::update(&mut world.bombs, &mut world.players, &mut world.tiles, actions, &mut self.rng);
 
         let mut winner_id: i32 = -1;
         for player in world.players.iter() {

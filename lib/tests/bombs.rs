@@ -3,7 +3,7 @@ extern crate bomberman_wasm;
 #[cfg(test)]
 mod test {
     use rand::rngs::mock::StepRng;
-    use bomberman_wasm::controllers::bomb_controller;
+    use bomberman_wasm::controllers::state;
     use bomberman_wasm::models::{Bomb, Player, Tile, Tiles};
 
     const MAX_BOMBS: usize = 36;
@@ -18,7 +18,7 @@ mod test {
         }).collect();
         let mut tiles = Tiles::new(tiles, 3, 3);
         let mut bombs = vec![Bomb::new(1, 1, (1.0, 1.0))];
-        for _i in 0..BOMB_LIFE { bomb_controller::update(&mut bombs, &mut players, &mut tiles, &mut rng); }
+        for _i in 0..BOMB_LIFE { state::update_bombs(&mut bombs, &mut players, &mut tiles, &mut rng); }
         
         assert_eq!(tiles.get(1, 0), Tile::Empty);
         assert_eq!(tiles.get(0, 1), Tile::Empty);
@@ -35,7 +35,7 @@ mod test {
         }).collect();
         let mut tiles = Tiles::new(tiles, 3, 3);
         let mut bombs = vec![Bomb::new(1, 1, (1.0, 1.0))];
-        for _i in 0..BOMB_LIFE { bomb_controller::update(&mut bombs, &mut players, &mut tiles, &mut rng); }
+        for _i in 0..BOMB_LIFE { state::update_bombs(&mut bombs, &mut players, &mut tiles, &mut rng); }
         
         assert_eq!(tiles.get(1, 0), Tile::HardBlock);
         assert_eq!(tiles.get(0, 1), Tile::HardBlock);
@@ -52,7 +52,7 @@ mod test {
         }).collect();
         let mut tiles = Tiles::new(tiles, 3, 3);
         let mut bombs = vec![Bomb::new(1, 1, (2.0, 2.0))];
-        for _i in 0..BOMB_LIFE { bomb_controller::update(&mut bombs, &mut players, &mut tiles, &mut rng); }
+        for _i in 0..BOMB_LIFE { state::update_bombs(&mut bombs, &mut players, &mut tiles, &mut rng); }
         
         assert_eq!(tiles.get(1, 0), Tile::SoftBlock);
         assert_eq!(tiles.get(0, 1), Tile::SoftBlock);
@@ -70,7 +70,7 @@ mod test {
         let mut tiles = Tiles::new(tiles, 3, 3);
         let mut bombs = vec![Bomb::new(1, 3, (0.0, 0.0))];
 
-        for _i in 0..BOMB_LIFE { bomb_controller::update(&mut bombs, &mut players, &mut tiles, &mut rng); }
+        for _i in 0..BOMB_LIFE { state::update_bombs(&mut bombs, &mut players, &mut tiles, &mut rng); }
         
         assert_eq!(tiles.get(1, 0), Tile::Empty);
         assert_eq!(tiles.get(2, 0), Tile::SoftBlock);
@@ -86,7 +86,7 @@ mod test {
         let mut tiles = Tiles::new(tiles, 3, 3);
         let mut bombs = vec![Bomb::new(1, 1, (0.0, 0.0))];
 
-        for _i in 0..BOMB_LIFE { bomb_controller::update(&mut bombs, &mut players, &mut tiles, &mut rng); }
+        for _i in 0..BOMB_LIFE { state::update_bombs(&mut bombs, &mut players, &mut tiles, &mut rng); }
         
         assert_eq!(tiles.get(2, 0), Tile::SoftBlock);
     }
