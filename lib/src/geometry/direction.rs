@@ -4,8 +4,8 @@ use wasm_bindgen::prelude::*;
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Direction {
-    Up,
-    Right,
-    Down,
-    Left,
+  Up,
+  Right,
+  Down,
+  Left,
 }
