@@ -1,5 +1,5 @@
-import { InputType, InputState } from "./InputState";
 import { InputOption } from "./InputOption";
+import { InputType } from "@victorlee/bomberman-wasm";
 
 export const PlayerOneInputOptions: InputOption = {
   left: "a",
@@ -18,38 +18,33 @@ export const PlayerTwoInputOptions: InputOption = {
 }
 
 export class InputController {
-  inputStates: InputState[] = [];
   private kdEventListener: ((event: KeyboardEvent) => void) | undefined;
   private kuEventListener: ((event: KeyboardEvent) => void) | undefined;
+
+  constructor(private sendInput: (id: number, inputType: InputType, on: boolean) => void) {
+  }
   
   registerInputs(canvas: HTMLCanvasElement, inputOptions: InputOption[]) {
     if (this.kdEventListener) {
-      canvas.removeEventListener("keydown", this.kdEventListener);
+      canvas.removeEventListener("keydown", this.kdEventListener)
     }
     if (this.kuEventListener) {
-      canvas.removeEventListener("keyup", this.kuEventListener);
+      canvas.removeEventListener("keyup", this.kuEventListener)
     }
-    this.inputStates = [];
 
     const inputMapping = new Map<string, { id: number, key: InputType }>()
-    for (let id = 0; id < 4; id++) {
-      const inputOption = inputOptions[id]
-      if (typeof inputOption !== "undefined") {
-        inputMapping.set(inputOption.left, { id, key: InputType.Left })
-        inputMapping.set(inputOption.right, { id, key: InputType.Right })
-        inputMapping.set(inputOption.up, { id, key: InputType.Up })
-        inputMapping.set(inputOption.down, { id, key: InputType.Down })
-        inputMapping.set(inputOption.bomb, { id, key: InputType.Bomb })
-        this.inputStates.push(new InputState(true))
-      } else {
-        this.inputStates.push(new InputState(false))
-      }
-    }
+    inputOptions.forEach((inputOption, id) => {
+      inputMapping.set(inputOption.left, { id, key: InputType.Left })
+      inputMapping.set(inputOption.right, { id, key: InputType.Right })
+      inputMapping.set(inputOption.up, { id, key: InputType.Up })
+      inputMapping.set(inputOption.down, { id, key: InputType.Down })
+      inputMapping.set(inputOption.bomb, { id, key: InputType.Bomb })
+    })
 
     this.kdEventListener = (event: KeyboardEvent) => {
       const value = inputMapping.get(event.key)
       if (typeof value !== "undefined") {
-        this.inputStates[value.id].handleInput(true, value.key);
+        this.sendInput(value.id, value.key, true)
       }
       event.preventDefault();
     };
@@ -57,18 +52,10 @@ export class InputController {
     this.kuEventListener = (event: KeyboardEvent) => {
       const value = inputMapping.get(event.key)
       if (typeof value !== "undefined") {
-        this.inputStates[value.id].handleInput(false, value.key);
+        this.sendInput(value.id, value.key, false)
       }
       event.preventDefault();
     }
     canvas.addEventListener("keyup", this.kuEventListener);
-  }
-
-  get inputValues() {
-    return new Int32Array(this.inputStates.map(i => i.value))
-  }
-  
-  resetValues() {
-    this.inputStates.forEach(i => i.reset())
   }
 }

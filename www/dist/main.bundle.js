@@ -52,83 +52,83 @@
 /******/ 	function promiseResolve() { return Promise.resolve(); }
 /******/
 /******/ 	var wasmImportObjects = {
-/******/ 		"./node_modules/@victorlee/bomberman-wasm/bomberman_wasm_bg.wasm": function() {
+/******/ 		"../lib/pkg/bomberman_wasm_bg.wasm": function() {
 /******/ 			return {
 /******/ 				"./bomberman_wasm": {
 /******/ 					"__wbindgen_string_new": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbindgen_object_drop_ref": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_object_drop_ref"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_object_drop_ref"](p0i32);
 /******/ 					},
 /******/ 					"__widl_f_begin_path_CanvasRenderingContext2D": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_begin_path_CanvasRenderingContext2D"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_begin_path_CanvasRenderingContext2D"](p0i32);
 /******/ 					},
 /******/ 					"__widl_f_fill_CanvasRenderingContext2D": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_fill_CanvasRenderingContext2D"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_fill_CanvasRenderingContext2D"](p0i32);
 /******/ 					},
 /******/ 					"__widl_f_stroke_CanvasRenderingContext2D": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_stroke_CanvasRenderingContext2D"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_stroke_CanvasRenderingContext2D"](p0i32);
 /******/ 					},
 /******/ 					"__widl_f_set_stroke_style_CanvasRenderingContext2D": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_set_stroke_style_CanvasRenderingContext2D"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_set_stroke_style_CanvasRenderingContext2D"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__widl_f_set_fill_style_CanvasRenderingContext2D": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_set_fill_style_CanvasRenderingContext2D"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_set_fill_style_CanvasRenderingContext2D"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__widl_f_set_line_width_CanvasRenderingContext2D": function(p0i32,p1f64) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_set_line_width_CanvasRenderingContext2D"](p0i32,p1f64);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_set_line_width_CanvasRenderingContext2D"](p0i32,p1f64);
 /******/ 					},
 /******/ 					"__widl_f_arc_CanvasRenderingContext2D": function(p0i32,p1f64,p2f64,p3f64,p4f64,p5f64,p6i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_arc_CanvasRenderingContext2D"](p0i32,p1f64,p2f64,p3f64,p4f64,p5f64,p6i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_arc_CanvasRenderingContext2D"](p0i32,p1f64,p2f64,p3f64,p4f64,p5f64,p6i32);
 /******/ 					},
 /******/ 					"__widl_f_close_path_CanvasRenderingContext2D": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_close_path_CanvasRenderingContext2D"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_close_path_CanvasRenderingContext2D"](p0i32);
 /******/ 					},
 /******/ 					"__widl_f_line_to_CanvasRenderingContext2D": function(p0i32,p1f64,p2f64) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_line_to_CanvasRenderingContext2D"](p0i32,p1f64,p2f64);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_line_to_CanvasRenderingContext2D"](p0i32,p1f64,p2f64);
 /******/ 					},
 /******/ 					"__widl_f_move_to_CanvasRenderingContext2D": function(p0i32,p1f64,p2f64) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_move_to_CanvasRenderingContext2D"](p0i32,p1f64,p2f64);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_move_to_CanvasRenderingContext2D"](p0i32,p1f64,p2f64);
 /******/ 					},
 /******/ 					"__widl_f_fill_rect_CanvasRenderingContext2D": function(p0i32,p1f64,p2f64,p3f64,p4f64) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__widl_f_fill_rect_CanvasRenderingContext2D"](p0i32,p1f64,p2f64,p3f64,p4f64);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__widl_f_fill_rect_CanvasRenderingContext2D"](p0i32,p1f64,p2f64,p3f64,p4f64);
 /******/ 					},
 /******/ 					"__wbg_getRandomValues_1ef11e888e5228e9": function(p0i32,p1i32,p2i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_getRandomValues_1ef11e888e5228e9"](p0i32,p1i32,p2i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_getRandomValues_1ef11e888e5228e9"](p0i32,p1i32,p2i32);
 /******/ 					},
 /******/ 					"__wbg_randomFillSync_1b52c8482374c55b": function(p0i32,p1i32,p2i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_randomFillSync_1b52c8482374c55b"](p0i32,p1i32,p2i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_randomFillSync_1b52c8482374c55b"](p0i32,p1i32,p2i32);
 /******/ 					},
 /******/ 					"__wbg_new_3a746f2619705add": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_new_3a746f2619705add"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_new_3a746f2619705add"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbg_call_f54d3a6dadb199ca": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_call_f54d3a6dadb199ca"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_call_f54d3a6dadb199ca"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbindgen_jsval_eq": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_jsval_eq"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_jsval_eq"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbg_self_ac379e780a0d8b94": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_self_ac379e780a0d8b94"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_self_ac379e780a0d8b94"](p0i32);
 /******/ 					},
 /******/ 					"__wbg_require_6461b1e9a0d7c34a": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_require_6461b1e9a0d7c34a"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_require_6461b1e9a0d7c34a"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbg_crypto_1e4302b85d4f64a2": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_crypto_1e4302b85d4f64a2"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_crypto_1e4302b85d4f64a2"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_is_undefined": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_is_undefined"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_is_undefined"](p0i32);
 /******/ 					},
 /******/ 					"__wbg_getRandomValues_1b4ba144162a5c9e": function(p0i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbg_getRandomValues_1b4ba144162a5c9e"](p0i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbg_getRandomValues_1b4ba144162a5c9e"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_debug_string": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_debug_string"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_debug_string"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbindgen_throw": function(p0i32,p1i32) {
-/******/ 						return installedModules["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm.js"].exports["__wbindgen_throw"](p0i32,p1i32);
+/******/ 						return installedModules["../lib/pkg/bomberman_wasm.js"].exports["__wbindgen_throw"](p0i32,p1i32);
 /******/ 					}
 /******/ 				}
 /******/ 			};
@@ -218,7 +218,7 @@
 /******/
 /******/ 		// Fetch + compile chunk loading for webassembly
 /******/
-/******/ 		var wasmModules = {"1":["./node_modules/@victorlee/bomberman-wasm/bomberman_wasm_bg.wasm"]}[chunkId] || [];
+/******/ 		var wasmModules = {"0":["../lib/pkg/bomberman_wasm_bg.wasm"]}[chunkId] || [];
 /******/
 /******/ 		wasmModules.forEach(function(wasmModuleId) {
 /******/ 			var installedWasmModuleData = installedWasmModules[wasmModuleId];
@@ -228,7 +228,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"./node_modules/@victorlee/bomberman-wasm/bomberman_wasm_bg.wasm":"a09de9202e71f6191963"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"../lib/pkg/bomberman_wasm_bg.wasm":"9183a0e9da1afcc7a276"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
@@ -398,7 +398,7 @@ eval("module.exports = __webpack_require__.p + \"88beac79140b08b57e58f9d869137ec
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _styles_game_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/styles/game.css */ \"./src/styles/game.css\");\n/* harmony import */ var _styles_game_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_styles_game_css__WEBPACK_IMPORTED_MODULE_0__);\n\r\nPromise.all(/*! import() */[__webpack_require__.e(1), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ./bindings */ \"./src/bindings.ts\"))\r\n    .catch(e => console.error(\"Error importing wasm:\", e));\r\n\n\n//# sourceURL=webpack:///./src/index.ts?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _styles_game_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/styles/game.css */ \"./src/styles/game.css\");\n/* harmony import */ var _styles_game_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_styles_game_css__WEBPACK_IMPORTED_MODULE_0__);\n\r\n__webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ./bindings */ \"./src/bindings.ts\"))\r\n    .catch(e => console.error(\"Error importing wasm:\", e));\r\n\n\n//# sourceURL=webpack:///./src/index.ts?");
 
 /***/ }),
 

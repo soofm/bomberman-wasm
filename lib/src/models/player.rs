@@ -13,6 +13,7 @@ pub struct Player {
     pub bomb_number: i32,
     pub bomb_power: i32,
     pub has_boots: bool,
+    pub is_human: bool,
 }
 
 impl Player {
@@ -25,6 +26,7 @@ impl Player {
             bomb_number: 1,
             bomb_power: 1,
             has_boots: false,
+            is_human: false,
         }
     }
 

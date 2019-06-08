@@ -9,14 +9,18 @@ const ctx = canvas.getContext("2d")
 const onePlayer = <HTMLButtonElement>document.getElementById("one-player")
 const twoPlayer = <HTMLButtonElement>document.getElementById("two-player")
 let animationId: any = null
-const inputController = new InputController()
 let gameEngine = GameEngine.new();
+
+const sendInput = (playerId: number, inputType: number, on: boolean): void => {
+  gameEngine.send_input(playerId, inputType, on)
+}
+
+const inputController = new InputController(sendInput)
 
 const renderLoop = () => {
   gameEngine.draw(ctx)
   
-  const state = gameEngine.tick(inputController.inputValues)
-  inputController.resetValues()
+  const state = gameEngine.tick()
   if (state != 0) {
     stopGame(state)
   }
@@ -51,11 +55,14 @@ const stopGame = (state: number) => {
 }
 
 onePlayer.addEventListener("click", (event) => {
+  gameEngine.set_human_player(0);
   inputController.registerInputs(canvas, [PlayerOneInputOptions])
   startGame()
 })
 
 twoPlayer.addEventListener("click", (event) => {
+  gameEngine.set_human_player(0);
+  gameEngine.set_human_player(1);
   inputController.registerInputs(canvas, [PlayerOneInputOptions, PlayerTwoInputOptions])
   startGame()
 })

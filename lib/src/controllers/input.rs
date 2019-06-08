@@ -1,33 +1,35 @@
 use crate::geometry::Direction;
 use crate::models::{Actions, Player};
 
-// input: i32
-// i000 0000 00ab lrud
-pub fn eval(player: &Player, input: i32) -> Actions {
-    let bomb = input & 16 != 0;
-    let left = input & 8 != 0;
-    let right = input & 4 != 0;
-    let up = input & 2 != 0;
-    let down = input & 1 != 0;
+#[derive(Default)]
+pub struct InputState {
+    pub left: bool,
+    pub right: bool,
+    pub up: bool,
+    pub down: bool,
+    pub bomb: bool,
+    pub h: bool,
+}
 
-    let dir_x: Option<Direction> = if left && !right {
+pub fn eval(player: &Player, input_state: &InputState) -> Actions {
+    let dir_x: Option<Direction> = if input_state.left && !input_state.right {
         Some(Direction::Left)
-    } else if right && !left {
+    } else if input_state.right && !input_state.left {
         Some(Direction::Right)
     } else {
         None
     };
 
-    let dir_y: Option<Direction> = if up && !down {
+    let dir_y: Option<Direction> = if input_state.up && !input_state.down {
         Some(Direction::Up)
-    } else if down && !up {
+    } else if input_state.down && !input_state.up {
         Some(Direction::Down)
     } else {
         None
     };
 
     let dir: Option<Direction> = if dir_x != None && dir_y != None {
-        if input & 32 != 0 {
+        if input_state.h {
             dir_x
         } else {
             dir_y
@@ -41,6 +43,6 @@ pub fn eval(player: &Player, input: i32) -> Actions {
     Actions {
         player_id: player.id,
         direction: dir,
-        place_bomb: bomb,
+        place_bomb: input_state.bomb,
     }
 }
