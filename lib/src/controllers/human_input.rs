@@ -1,6 +1,5 @@
-use super::input::Input;
 use crate::geometry::Direction;
-use crate::models::{Actions, Player, World};
+use crate::models::{Actions, Player};
 
 #[derive(Default)]
 pub struct HumanInput {
@@ -12,8 +11,8 @@ pub struct HumanInput {
   pub h: bool,
 }
 
-impl Input for HumanInput {
-  fn eval(&mut self, player: &Player, _world: &World) -> Actions {
+impl HumanInput {
+  pub fn eval(&mut self, player: &Player) -> Actions {
     let dir_x: Option<Direction> = if self.left && !self.right {
       Some(Direction::Left)
     } else if self.right && !self.left {

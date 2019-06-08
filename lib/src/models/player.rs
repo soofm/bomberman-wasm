@@ -3,7 +3,7 @@ use crate::geometry::Position;
 
 const MAX_BOMBS: i32 = 9;
 const MAX_POWER: i32 = 15;
-const MAX_SPEED: i32 = 15;
+const MAX_SPEED: i32 = 12;
 
 pub struct Player {
   pub id: i32,
@@ -22,7 +22,7 @@ impl Player {
       id: id,
       position: position,
       is_alive: true,
-      speed: 5,
+      speed: 3,
       bomb_number: 1,
       bomb_power: 1,
       has_boots: false,

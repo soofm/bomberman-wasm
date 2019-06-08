@@ -1,65 +1,58 @@
-use super::Input;
+use super::ai;
 use crate::geometry::Direction;
-use crate::models::{Actions, Player, Tiles, World};
+use crate::models::{Actions, Player, World};
+use rand::{Rng, RngCore};
 
 #[derive(Default)]
 pub struct AIInput {
-  pub next_eval: i32,
-  pub direction: Option<Direction>,
+  next_eval: i32,
+  path: Vec<(i32, i32)>,
+  current: (f64, f64),
 }
 
-impl Input for AIInput {
-  fn eval(&mut self, player: &Player, world: &World) -> Actions {
+impl AIInput {
+  pub fn eval<R: RngCore>(&mut self, player: &Player, world: &World, rng: &mut R) -> Actions {
+    let (ox, oy) = player.position;
+    let ocol = ox.round() as i32;
+    let orow = oy.round() as i32;
+
     if self.next_eval > 0 {
       self.next_eval -= 1;
-    } else {
-    let (col, row) = (player.position.0.round() as i32, player.position.1.round() as i32);
-    let open_tiles = get_open_tiles((col, row), &world.tiles);
-    if self.direction != Some(Direction::Left) { self.direction = Some(Direction::Left); }
-    else { self.direction = Some(Direction::Right); }
-    self.next_eval = 30;
-  }
+    } else {      
+      let available_paths = ai::find_available_paths((ocol, orow), &world.tiles);
+      let len = available_paths.keys().len();
+      let n = rng.gen_range(0, len);
+      let &target = available_paths.keys().skip(n).next().unwrap();
+      self.path = ai::rebuild_path(target, available_paths);
+      if let Some(next) = self.path.pop() {
+        self.current = (next.0 as f64, next.1 as f64);
+      }
+
+      self.next_eval = 30;
+    }
+
+    if (ox - self.current.0).abs() < 0.1 && (oy - self.current.1).abs() < 0.1 {
+      if let Some(next) = self.path.pop() {
+        self.current = (next.0 as f64, next.1 as f64);
+      }
+    }
+
+    let mut direction: Option<Direction> = None;
+    let (x, y) = self.current;
+    if x < ox {
+      direction = Some(Direction::Left)
+    } else if x > ox {
+      direction = Some(Direction::Right)
+    } else if y < oy {
+      direction = Some(Direction::Up)
+    } else if y > oy {
+      direction = Some(Direction::Down)
+    }
 
     Actions {
       player_id: player.id,
-      direction: self.direction,
+      direction: direction,
       place_bomb: false,
     }
   }
-}
-
-fn get_farthest_tile(position: (i32, i32), tiles: Vec<(i32, i32)>) {
-
-}
-
-fn get_open_tiles(position: (i32, i32), tiles: &Tiles) -> Vec<(i32, i32)> {    
-  let mut visited = Vec::with_capacity((tiles.width * tiles.height) as usize);
-  let mut queue: Vec<(i32, i32)> = Vec::with_capacity(10);
-  let mut result: Vec<(i32, i32)> = Vec::with_capacity(10);
-
-  for row in 0..tiles.height {
-    for col in 0..tiles.width {
-      if tiles.is_blocked(col, row) { visited[(row * tiles.width + col) as usize] = true; }
-    }
-  }
-
-  queue.push(position);
-  while !queue.is_empty() {
-    let (col, row) = queue.remove(0);
-    result.push((col, row));
-
-    if col > 0 && !visited[(row * tiles.width + col - 1) as usize] {
-      queue.push((col - 1, row));
-    }
-    if col < tiles.width - 1 && !visited[(row * tiles.width + col + 1) as usize] {
-      queue.push((col + 1, row));
-    }
-    if row > 0 && !visited[((row - 1) * tiles.width + col) as usize] {
-      queue.push((col, row - 1));
-    }
-    if row < tiles.height - 1 && !visited[((row + 1) * tiles.width + col) as usize] {
-      queue.push((col, row + 1));
-    }
-  }
-  result
 }

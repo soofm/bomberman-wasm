@@ -4,7 +4,7 @@ pub mod models;
 mod utils;
 
 use std::sync::Mutex;
-use controllers::{render, game_state, Input, AIInput, HumanInput};
+use controllers::{render, game_state, AIInput, HumanInput};
 use models::{Actions, World};
 use lazy_static::lazy_static;
 use wasm_bindgen::prelude::*;
@@ -36,7 +36,7 @@ pub enum InputType {
 
 #[wasm_bindgen]
 impl GameEngine {
-  pub fn new(num_humans: i32) -> Self {
+  pub fn new() -> Self {
     GameEngine {
       rng: rand::thread_rng(),
       human_inputs: Default::default(),
@@ -52,9 +52,9 @@ impl GameEngine {
         .zip(self.ai_inputs.iter_mut())
         .enumerate() {
         actions[index] = if player.is_human {
-          human_input.eval(player, world)
+          human_input.eval(player)
         } else {
-          ai_input.eval(player, world)
+          ai_input.eval(player, world, &mut self.rng)
         }
       }
       

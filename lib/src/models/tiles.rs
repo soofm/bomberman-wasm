@@ -27,6 +27,15 @@ impl Tiles {
     }
   }
 
+  pub fn map_blocked(&self) -> Vec<bool> {
+    self.tiles.iter().map(|tile| {
+      match tile {
+        Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
+        _ => false
+      }
+    }).collect()
+  }
+
   pub fn set(&mut self, col: i32, row: i32, value: Tile) {
     self.tiles[(row * self.width + col) as usize] = value;
   }
