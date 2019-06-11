@@ -146,7 +146,6 @@ export class GraphicsController {
   }
 
   public addExplosion = (x: number, y: number, explosionSize: number) => {
-    console.log(JSON.stringify({x, y, explosionSize}))
     const left = explosionSize >> 24
     const right = (explosionSize >> 16) & 255
     const up = (explosionSize >> 8) & 255
@@ -157,7 +156,6 @@ export class GraphicsController {
     const explosionRayTexture = this.loader.resources[Textures.ExplosionRay].texture
     const sprite = this.getSprite(explosionTexture, 0, 0, 0)
     container.addChild(sprite)
-    console.log(`left=${left}, right=${right}, up=${up}, down=${down}`)
     for (let i = 1; i <= left; i++) {
       container.addChild(this.getSprite(explosionRayTexture, -i, 0, 0))
     }
