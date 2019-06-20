@@ -3,26 +3,26 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
     <title>Bomberman in Rust and Wasm</title>
-  <link rel="shortcut icon" href="favicon.ico"></head>
+  <link rel="shortcut icon" href="favicon.ico"><link href="main.css" rel="stylesheet"></head>
   <body>
-    <div class="wrapper">
-      <div id="main">
-        <div id="menu">
-          <div id="init-menu">
-            <h1>BOMBERMAN</h1>
-          </div>
-          <div id="post-menu" style="visibility: hidden">
-            <h1>RESULT</h1>
-            <h2>Play again?</h2>
-          </div>
-          <ul class="menu-options">
-            <li><a href="#" id="one-player" class="button">ONE PLAYER</a></li>
-            <li><a href="#" id="two-player" class="button">TWO PLAYERS</a></li>
-          </ul>
-        </div>
-      </div>
+    <div id="wrapper">
       <div id="game">
-        
+        <div id="main">
+          <div id="menu">
+            <div id="init-menu">
+              <h1>BOMBERMAN</h1>
+            </div>
+            <div id="post-menu" style="visibility: hidden">
+              <h1>RESULT</h1>
+              <h2>Play again?</h2>
+            </div>
+            <ul class="menu-options">
+              <li><a href="#" id="one-player" class="button">ONE PLAYER</a></li>
+              <li><a href="#" id="two-player" class="button">TWO PLAYERS</a></li>
+            </ul>
+          </div>
+        </div>
+        <div id="game-window"></div>
       </div>
       <div class="controls">
         <div class="controls-section">
