@@ -19,8 +19,22 @@ impl Tiles {
     self.tiles[(row * self.width + col) as usize]
   }
 
+  pub fn iter(&self) -> std::slice::Iter<Tile> {
+    self.tiles.iter()
+  }
+
   pub fn get_tiles_ptr(&self) -> *const Tile {
     self.tiles.as_ptr()
+  }
+
+  pub fn adjacent_soft_block_count(&self, col: i32, row: i32) -> i32 {
+    let mut count = 0;
+    if col > 0 && self.get(col - 1, row) == Tile::SoftBlock { count += 1; }
+    if col < self.width - 1 && self.get(col + 1, row) == Tile::SoftBlock { count += 1; }
+    if row > 0 && self.get(col, row - 1) == Tile::SoftBlock { count += 1; }
+    if row < self.height - 1 && self.get(col, row + 1) == Tile::SoftBlock { count += 1; }
+
+    count
   }
 
   pub fn is_blocked(&self, col: i32, row: i32) -> bool {
@@ -29,15 +43,6 @@ impl Tiles {
       Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
       _ => false
     }
-  }
-
-  pub fn map_blocked(&self) -> Vec<bool> {
-    self.tiles.iter().map(|tile| {
-      match tile {
-        Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
-        _ => false
-      }
-    }).collect()
   }
 
   pub fn set(&mut self, col: i32, row: i32, value: Tile) {

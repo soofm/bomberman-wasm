@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require('path');
 
 const dist = path.resolve(__dirname, "dist");
@@ -11,11 +12,14 @@ module.exports = {
     rules: [
       {
         test: /\.ts$/,
-        use: [ { loader: "ts-loader" } ]
+        use: [ "ts-loader" ]
       },
       {
         test: /\.css$/,
-        use: [ { loader: "style-loader" }, { loader: "css-loader" } ]
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader"
+        ]
       },
       {
         test: /\.(png|svg)$/,
@@ -46,5 +50,6 @@ module.exports = {
       // WasmPackPlugin defaults to compiling in "dev" profile. To change that, use forceMode: 'release':
       // forceMode: 'release'
     }),
+    new MiniCssExtractPlugin()
   ],
 };

@@ -1,13 +1,19 @@
 use crate::geometry::{InRange, Position};
-use crate::models::{Actions, Bomb, Explosion, Player, Tile, Tiles, World};
+use crate::models::{Actions, Bomb, Player, Tile, Tiles, World};
 use rand::{Rng, RngCore};
 
 pub fn update<R: RngCore>(world: &mut World, actions: [Actions; 4], rng: &mut R) {
   // run ticks before any new items are added
+  while world.bombs.len() > 0 && world.bombs[0].timer == 0 {
+    world.bombs.remove(0);
+  }
   for bomb in world.bombs.iter_mut() {
     bomb.timer -= 1;
   }
 
+  while world.explosions.len() > 0 && world.explosions[0].timer == 0 {
+    world.explosions.remove(0);
+  }
   for explosion in world.explosions.iter_mut() {
     explosion.timer -= 1;
   }
@@ -30,16 +36,11 @@ fn update_players(world: &mut World, actions: [Actions; 4]) {
     let col = player.x.round() as i32;
     let row = player.y.round() as i32;
     for explosion in world.explosions.iter() {
-      let ex = explosion.x.round() as i32;
-      let ey = explosion.y.round() as i32;
-      if ey == row && (col >= ex - explosion.left && col <= ex + explosion.right) ||
-        ex == col && (row >= ey - explosion.up && row <= ey + explosion.down) {
+      if explosion.y == row && (col >= explosion.x - explosion.left && col <= explosion.x + explosion.right) ||
+        explosion.x == col && (row >= explosion.y - explosion.up && row <= explosion.y + explosion.down) {
           player.is_alive = false;
       }
     }
-
-    let col = player.x.round() as i32;
-    let row = player.y.round() as i32;
 
     if player.bomb_number > 0 && action.place_bomb && !world.tiles.is_blocked(col, row) {
       player.bomb_number -= 1;
@@ -62,56 +63,42 @@ fn add_bomb(bombs: &mut Vec<Bomb>, tiles: &mut Tiles, player: &Player, id: usize
 
 fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
   for bomb in world.bombs.iter_mut() {
+    let col = bomb.x.round() as i32;
+    let row = bomb.y.round() as i32;
+
     if bomb.timer == 0 {
-      let (left, right, up, down) = explode(&bomb, &mut world.tiles, rng);
+      world.tiles.set(col, row, Tile::Empty);
+
+      let explosion = bomb.calc_explosion(&world.tiles);
+      if explosion.left > 0 && world.tiles.get(col - explosion.left, row) == Tile::SoftBlock {
+        world.tiles.set(col - explosion.left, row, gen_tile_replacement(rng));
+      }
+      if explosion.right > 0 && world.tiles.get(col + explosion.right, row) == Tile::SoftBlock {
+        world.tiles.set(col + explosion.right, row, gen_tile_replacement(rng));
+      }
+      if explosion.up > 0 && world.tiles.get(col, row - explosion.up) == Tile::SoftBlock {
+        world.tiles.set(col, row - explosion.up, gen_tile_replacement(rng));
+      }
+      if explosion.down > 0 && world.tiles.get(col, row + explosion.down) == Tile::SoftBlock {
+        world.tiles.set(col, row + explosion.down, gen_tile_replacement(rng));
+      }
+      world.explosions.push(explosion);
+
       world.players[bomb.player_id].bomb_number += 1;
-      world.explosions.push(Explosion::new(bomb.player_id, bomb.x, bomb.y, left, right, up, down));
     } else {
       break;
     }
   }
 }
 
-fn explode<R: RngCore>(bomb: &Bomb, tiles: &mut Tiles, rng: &mut R) -> (i32, i32, i32, i32) {
-  let ocol = bomb.x.round() as i32;
-  let orow = bomb.y.round() as i32;
-
-  tiles.set(ocol, orow, Tile::Empty);
-
-  let left = explode_ray(bomb, tiles, ocol, orow, -1, 0, rng);
-  let right = explode_ray(bomb, tiles, ocol, orow, 1, 0, rng);
-  let up = explode_ray(bomb, tiles, ocol, orow, 0, -1, rng);
-  let down = explode_ray(bomb, tiles, ocol, orow, 0, 1, rng);
-  (left, right, up, down)
-}
-
-fn explode_ray<R: RngCore>(bomb: &Bomb, tiles: &mut Tiles, ocol: i32, orow: i32, x: i32, y: i32, rng: &mut R) -> i32 {
-  let mut res = 0;
-  let mut col = ocol;
-  let mut row = orow;
-  let mut found_tile: Option<Tile> = None;
-  while res < bomb.power && found_tile != Some(Tile::HardBlock) && found_tile != Some(Tile::SoftBlock) {
-    res += 1;
-    col += x;
-    row += y;
-    if col < 0 || col >= tiles.width || row < 0 || row >= tiles.height { break; }
-    found_tile = Some(tiles.get(col, row));
-  }
-  match found_tile {
-    Some(Tile::SoftBlock) => {
-      let n = rng.gen::<f64>();
-      let tile = match n {
-        x if x.in_range(0.0, 0.5) => Tile::Empty,
-        x if x.in_range(0.5, 0.65) => Tile::PowerupBombNumber,
-        x if x.in_range(0.65, 0.8) => Tile::PowerupBombPower,
-        x if x.in_range(0.8, 0.95) => Tile::PowerupSpeed,
-        x if x.in_range(0.95, 1.0) => Tile::PowerupBoots,
-        _ => Tile::Empty,
-      };
-      tiles.set(col, row, tile);
-      res
-    },
-    Some(Tile::HardBlock) | None => { res - 1 },
-    _ => { res },
-  }
+fn gen_tile_replacement<R: RngCore>(rng: &mut R) -> Tile {
+    let n = rng.gen::<f64>();
+    match n {
+      x if x.in_range(0.0, 0.5) => Tile::Empty,
+      x if x.in_range(0.5, 0.65) => Tile::PowerupBombNumber,
+      x if x.in_range(0.65, 0.8) => Tile::PowerupBombPower,
+      x if x.in_range(0.8, 0.95) => Tile::PowerupSpeed,
+      x if x.in_range(0.95, 1.0) => Tile::PowerupBoots,
+      _ => Tile::Empty,
+    }
 }

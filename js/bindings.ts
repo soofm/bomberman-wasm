@@ -2,7 +2,7 @@ import { GameEngine } from "../crate/pkg"
 import { memory } from "../crate/pkg/bomberman_wasm_bg"
 import * as Constants from "./Constants"
 import { InputController, PlayerOneInputOptions, PlayerTwoInputOptions } from "./InputController"
-import { GraphicsController } from "./GraphicsController";
+import { GraphicsController } from "./GraphicsController"
 
 const main = <HTMLDivElement>document.getElementById("main")
 const initMenu = <HTMLDivElement>document.getElementById("init-menu")
@@ -10,7 +10,7 @@ const postMenu = <HTMLDivElement>document.getElementById("post-menu")
 const onePlayer = <HTMLButtonElement>document.getElementById("one-player")
 const twoPlayer = <HTMLButtonElement>document.getElementById("two-player")
 let animationId: any = null
-let gameEngine = GameEngine.new()
+let gameEngine: GameEngine
 let loaded = false
 
 const sendInput = (playerId: number, inputType: number, on: boolean): void => {
@@ -42,14 +42,17 @@ const renderLoop = () => {
   }
 }
 
-const startGame = () => {
+const startGame = (players: number) => {
+  gameEngine = GameEngine.new()
+  if (players > 0) { gameEngine.set_human_player(0) }
+  if (players > 1) { gameEngine.set_human_player(1) }
+  if (players > 2) { gameEngine.set_human_player(2) }
+  if (players > 3) { gameEngine.set_human_player(3) }
   const tilesPtr = gameEngine.get_tiles_ptr()
   const tiles = new Uint8Array(memory.buffer, tilesPtr, Constants.Width * Constants.Height)
   graphicsController.init(tiles)
   if (initMenu.style.visibility !== "hidden") {
     initMenu.style.visibility = "hidden"
-  } else {
-    gameEngine.reset()
   }
   main.style.visibility = "hidden"
   postMenu.style.visibility = "hidden"
@@ -67,19 +70,18 @@ const stopGame = (state: number) => {
 
   cancelAnimationFrame(animationId)
   animationId = null
+  gameEngine.free()
+  graphicsController.reset()
 }
 
 onePlayer.addEventListener("click", (event) => {
   if (!loaded) { return }
-  gameEngine.set_human_player(0)
   inputController.registerInputs([PlayerOneInputOptions])
-  startGame()
+  startGame(1)
 })
 
 twoPlayer.addEventListener("click", (event) => {
   if (!loaded) { return }
-  gameEngine.set_human_player(0)
-  gameEngine.set_human_player(1)
   inputController.registerInputs([PlayerOneInputOptions, PlayerTwoInputOptions])
-  startGame()
+  startGame(2)
 })

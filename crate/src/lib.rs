@@ -51,7 +51,7 @@ impl GameEngine {
       actions[index] = if player.is_human {
         human_input.eval()
       } else {
-        ai_input.eval(player, world, &mut self.rng)
+        ai_input.eval(player, index, world, &mut self.rng)
       }
     }
     
@@ -95,10 +95,6 @@ impl GameEngine {
         },
       };
     }
-
-    while self.world.bombs.len() > 0 && self.world.bombs[0].timer == 0 {
-      self.world.bombs.remove(0);
-    }
   }
 
   pub fn render_explosions(&mut self, add_explosion: &js_sys::Function, remove_explosion: &js_sys::Function) {
@@ -108,14 +104,10 @@ impl GameEngine {
         0 => { remove_explosion.call0(&JsValue::NULL).unwrap(); },
         models::EXPLOSION_TIMER => {
           let explosion_size = (explosion.left << 24) + (explosion.right << 16) + (explosion.up << 8) + (explosion.down);
-          add_explosion.call3(&this, &JsValue::from(explosion.x), &JsValue::from(explosion.y), &JsValue::from(explosion_size)).unwrap();
+          add_explosion.call3(&this, &JsValue::from(explosion_size), &JsValue::from(explosion.x), &JsValue::from(explosion.y)).unwrap();
         },
         _ => {},
       };
-    }
-
-    while self.world.explosions.len() > 0 && self.world.explosions[0].timer == 0 {
-      self.world.explosions.remove(0);
     }
   }
 
@@ -146,10 +138,5 @@ impl GameEngine {
         if !on { input.bomb = true; }
       },
     }
-  }
-
-  pub fn reset(&mut self) {
-    let (tiles, players) = level::build_level();
-    self.world = World::new(tiles, players);
   }
 }

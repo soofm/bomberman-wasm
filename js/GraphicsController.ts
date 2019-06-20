@@ -50,7 +50,7 @@ export class GraphicsController {
     this.playerSprites = []
     this.bombSprites = []
     this.explosionContainers = []
-    document.getElementById("game")!.appendChild(this.app.view)
+    document.getElementById("game-window")!.appendChild(this.app.view)
 
     this.loader.add([
       { name: Textures.Empty, url: sand },
@@ -68,6 +68,12 @@ export class GraphicsController {
       { name: Textures.Player_3, url: player_3 },
       { name: Textures.Player_4, url: player_4 },
     ]).load(setup)
+  }
+
+  public reset = () => {
+    this.playerSprites = []
+    this.bombSprites = []
+    this.explosionContainers = []
   }
 
   public init = (tiles: Uint8Array) => {
@@ -145,7 +151,7 @@ export class GraphicsController {
     if (bomb) { this.app.stage.removeChild(bomb) }
   }
 
-  public addExplosion = (x: number, y: number, explosionSize: number) => {
+  public addExplosion = (explosionSize: number, x: number, y: number) => {
     const left = explosionSize >> 24
     const right = (explosionSize >> 16) & 255
     const up = (explosionSize >> 8) & 255

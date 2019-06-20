@@ -3,8 +3,8 @@ pub const EXPLOSION_TIMER: i32 = 30;
 #[derive(Debug)]
 pub struct Explosion {
   pub player_id: usize,
-  pub x: f64,
-  pub y: f64,
+  pub x: i32,
+  pub y: i32,
   pub left: i32,
   pub right: i32,
   pub up: i32,
@@ -13,7 +13,7 @@ pub struct Explosion {
 }
 
 impl Explosion {
-  pub fn new(player_id: usize, x: f64, y: f64, left: i32, right: i32, up: i32, down: i32) -> Self {
+  pub fn new(player_id: usize, x: i32, y: i32, left: i32, right: i32, up: i32, down: i32) -> Self {
     Explosion {
       player_id: player_id,
       x: x,

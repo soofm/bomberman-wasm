@@ -1,58 +1,61 @@
 use super::ai;
 use crate::geometry::Direction;
-use crate::models::{Actions, Player, World};
-use rand::{Rng, RngCore};
+use crate::models::{Actions, Bomb, Player, World};
+use rand::RngCore;
 
 #[derive(Default)]
 pub struct AIInput {
-  next_eval: i32,
-  path: Vec<(i32, i32)>,
-  current: (f64, f64),
+  direction: Option<Direction>,
+  target: (i32, i32),
+  skip: i32,
 }
 
 impl AIInput {
-  pub fn eval<R: RngCore>(&mut self, player: &Player, world: &World, rng: &mut R) -> Actions {
-    let ox = player.x;
-    let oy = player.y;
-    let ocol = ox.round() as i32;
-    let orow = oy.round() as i32;
+  pub fn eval<R: RngCore>(&mut self, player: &Player, player_id: usize, world: &World, rng: &mut R) -> Actions {
+    let mut place_bomb = false;
 
-    if self.next_eval > 0 {
-      self.next_eval -= 1;
-    } else {      
-      let available_paths = ai::find_available_paths((ocol, orow), &world.tiles);
-      let len = available_paths.keys().len();
-      let n = rng.gen_range(0, len);
-      let &target = available_paths.keys().skip(n).next().unwrap();
-      self.path = ai::rebuild_path(target, available_paths);
-      if let Some(next) = self.path.pop() {
-        self.current = (next.0 as f64, next.1 as f64);
-      }
-
-      self.next_eval = 30;
+    if self.skip > 0 {
+      self.skip -= 1;
     }
+    // Each time the AI runs its evaluation loop, it will decide to either stay put or move one tile in one direction.
+    // If it decides to move, it will continue in that direction until it either reaches its destination or it is blocked.
+    else if self.direction == None || world.tiles.is_blocked(self.target.0, self.target.1) ||
+        (player.x - self.target.0 as f64).abs() <= 0.1 && (player.y - self.target.1 as f64).abs() <= 0.1 {
+      // Evaluation loop:
+      // * Find all accessible tiles
+      // * Check if bomb should be placed at current location
+      // * Get tile safety matrix with possible new bomb in mind
+      // * Rank safe tiles and randomly choose from the best options
+      // * Perform moves
+      let col = player.x.round() as i32;
+      let row = player.y.round() as i32;
+      let accessible_tiles = ai::get_accessible_tiles(col, row, &world.tiles);
+      place_bomb = ai::eval_bomb_placement(accessible_tiles.keys(), &player, player_id, world, rng);
+      let new_bomb = if place_bomb {
+        Some(Bomb::new(player_id, player.bomb_power, player.x, player.y))
+      } else {
+        None
+      };
+      let tile_safety = ai::eval_tile_safety(world, new_bomb);
+      self.target = ai::choose_option(accessible_tiles, &player, player_id, world, &tile_safety, rng);
 
-    if (ox - self.current.0).abs() < 0.1 && (oy - self.current.1).abs() < 0.1 {
-      if let Some(next) = self.path.pop() {
-        self.current = (next.0 as f64, next.1 as f64);
-      }
-    }
-
-    let mut direction: Option<Direction> = None;
-    let (x, y) = self.current;
-    if x < ox {
-      direction = Some(Direction::Left)
-    } else if x > ox {
-      direction = Some(Direction::Right)
-    } else if y < oy {
-      direction = Some(Direction::Up)
-    } else if y > oy {
-      direction = Some(Direction::Down)
+      self.direction = if self.target.0 < col {
+        Some(Direction::Left)
+      } else if self.target.0 > col {
+        Some(Direction::Right)
+      } else if self.target.1 < row {
+        Some(Direction::Up)
+      } else if self.target.1 > row {
+        Some(Direction::Down)
+      } else {
+        self.skip = 5;
+        None
+      };
     }
 
     Actions {
-      direction: direction,
-      place_bomb: false,
+      direction: self.direction,
+      place_bomb: place_bomb,
     }
   }
 }
