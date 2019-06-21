@@ -1,9 +1,9 @@
-use super::Tile;
-use crate::geometry::Position;
+use super::{Tile, Tiles};
+use crate::geometry::{Direction, Position};
 
 const MAX_BOMBS: i32 = 9;
-const MAX_POWER: i32 = 15;
-const MAX_SPEED: i32 = 12;
+const MAX_POWER: i32 = 9;
+const MAX_SPEED: i32 = 8;
 
 pub struct Player {
   pub x: f64,
@@ -28,6 +28,10 @@ impl Player {
       has_boots: false,
       is_human: false,
     }
+  }
+
+  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, tiles: &Tiles) {
+    Position::move_in_direction(self, dir, dist, self.has_boots, tiles);
   }
 
   pub fn apply_powerup(&mut self, tile: Tile) -> bool {

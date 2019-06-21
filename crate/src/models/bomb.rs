@@ -25,6 +25,10 @@ impl Bomb {
     }
   }
 
+  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, tiles: &Tiles) {
+    Position::move_in_direction(self, dir, dist, false, tiles); 
+  }
+
   pub fn calc_explosion(&self, tiles: &Tiles) -> Explosion {
     let col = self.x.round() as i32;
     let row = self.y.round() as i32;

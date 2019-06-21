@@ -1,4 +1,4 @@
-use crate::geometry::{InRange, Position};
+use crate::geometry::InRange;
 use crate::models::{Actions, Bomb, Player, Tile, Tiles, World};
 use rand::{Rng, RngCore};
 
@@ -66,6 +66,10 @@ fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
     let col = bomb.x.round() as i32;
     let row = bomb.y.round() as i32;
 
+    if let Some(dir) = bomb.direction {
+      bomb.move_in_direction(dir, 0.2, &world.tiles);
+    }
+
     if bomb.timer == 0 {
       world.tiles.set(col, row, Tile::Empty);
 
@@ -94,11 +98,11 @@ fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
 fn gen_tile_replacement<R: RngCore>(rng: &mut R) -> Tile {
     let n = rng.gen::<f64>();
     match n {
-      x if x.in_range(0.0, 0.5) => Tile::Empty,
-      x if x.in_range(0.5, 0.65) => Tile::PowerupBombNumber,
-      x if x.in_range(0.65, 0.8) => Tile::PowerupBombPower,
-      x if x.in_range(0.8, 0.95) => Tile::PowerupSpeed,
-      x if x.in_range(0.95, 1.0) => Tile::PowerupBoots,
+      x if x.in_range(0.0, 0.6) => Tile::Empty,
+      x if x.in_range(0.6, 0.72) => Tile::PowerupBombNumber,
+      x if x.in_range(0.72, 0.84) => Tile::PowerupBombPower,
+      x if x.in_range(0.84, 0.96) => Tile::PowerupSpeed,
+      x if x.in_range(0.96, 1.0) => Tile::PowerupBoots,
       _ => Tile::Empty,
     }
 }
