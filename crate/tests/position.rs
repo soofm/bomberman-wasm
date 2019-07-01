@@ -29,8 +29,17 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
     assert_eq!(obj.position(), (1.0, 0.0));
+  }
+
+  #[test]
+  fn object_can_move_incrementally_from_origin_to_empty_square() {
+    let tiles = vec![Tile::Empty; 4];
+    let tiles = Tiles::new(tiles, 2, 2);
+    let mut obj = GameObject::new(0.1, 0.0);
+    obj.move_in_direction(Direction::Right, 0.1, false, &tiles);
+    assert_eq!(obj.position(), (0.2, 0.0));
   }
 
   #[test]
@@ -38,7 +47,7 @@ mod test {
     let tiles = vec![Tile::Empty; 6];
     let tiles = Tiles::new(tiles, 3, 2);
     let mut obj = GameObject::new(0.5, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
     assert_eq!(obj.position(), (1.5, 0.0));
   }
 
@@ -47,7 +56,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Left, 1.0, &tiles);
+    obj.move_in_direction(Direction::Left, 1.0, false, &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -56,7 +65,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Up, 1.0, &tiles);
+    obj.move_in_direction(Direction::Up, 1.0, false, &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -65,7 +74,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(1.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
     assert_eq!(obj.position(), (1.0, 0.0));
   }
 
@@ -74,7 +83,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(1.0, 1.0);
-    obj.move_in_direction(Direction::Down, 1.0, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
     assert_eq!(obj.position(), (1.0, 1.0));
   }
 
@@ -83,16 +92,16 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::HardBlock, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
   #[test]
-  fn object_cannot_move_right_from_midpoint_when_either_square_is_occupied() {
-    let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::Empty, Tile::Empty];
+  fn object_cannot_move_right_from_midpoint() {
+    let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.5);
-    obj.move_in_direction(Direction::Right, 0.5, &tiles);
+    obj.move_in_direction(Direction::Right, 0.5, false, &tiles);
     assert_eq!(obj.position(), (0.0, 0.5));
   }
 
@@ -101,7 +110,7 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.9);
-    obj.move_in_direction(Direction::Right, 0.5, &tiles);
+    obj.move_in_direction(Direction::Right, 0.5, false, &tiles);
     assert_eq!(obj.position(), (0.5, 1.0));
   }
 
@@ -110,16 +119,16 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::HardBlock, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Down, 1.0, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
   #[test]
-  fn object_cannot_move_down_from_midpoint_when_either_square_is_occupied() {
-    let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::HardBlock];
+  fn object_cannot_move_down_from_midpoint() {
+    let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.5, 0.0);
-    obj.move_in_direction(Direction::Down, 1.0, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
     assert_eq!(obj.position(), (0.5, 0.0));
   }
 }

@@ -12,37 +12,37 @@ pub trait Position {
       Direction::Up => (&y, &x, false, -1.0),
       Direction::Down => (&y, &x, false, 1.0),
     };
-    let target_tile: i32;
-    let adjusted: f64;
-    let target = *a + coef * dist;
+    let tari: i32;
+    let a_adj: f64;
+    let tar = *a + coef * dist;
     if coef < 0.0 {
-      target_tile = target.floor() as i32;
-      adjusted = a.floor();
+      tari = tar.floor() as i32;
+      a_adj = a.floor();
     } else {
-      target_tile = target.ceil() as i32;
-      adjusted = a.ceil();
+      tari = tar.ceil() as i32;
+      a_adj = a.ceil();
     }
 
-    let res = if target_tile != adjusted as i32 {
-      let bi = b.floor() as i32;
+    let mut res = (a_adj, *b);
+    if tari != a_adj as i32 {
       let bf = b.fract();
-      let blocked = if horiz {
-        (tiles.is_blocked(target_tile, bi), tiles.is_blocked(target_tile, bi + 1))
+      let b_adj = if bf <= CORNER {
+        b.floor()
+      } else if bf >= 1.0 - CORNER {
+        b.ceil()
       } else {
-        (tiles.is_blocked(bi, target_tile), tiles.is_blocked(bi + 1, target_tile))
+        -1.0
       };
-      if blocked.0 && blocked.1 {
-        (adjusted, *b)
-      } else if blocked.0 {
-        if bf < 1.0 - CORNER { (adjusted, *b) } else { (target, b.ceil()) }
-      } else if blocked.1 {
-        if bf > CORNER { (adjusted, *b) } else { (target, b.floor()) }
-      } else {
-        (target, *b)
+
+      if b_adj >= 0.0 {
+        let tile = if horiz { (tari, b_adj as i32) } else { (b_adj as i32, tari) };
+        if !tiles.is_blocked(tile.0, tile.1) {
+          res = (tar, b_adj);
+        }
       }
     } else {
-      (target, *b)
-    };
+      res = (tar, *b);
+    }
 
     if horiz {
       self.set_position(res.0, res.1);
