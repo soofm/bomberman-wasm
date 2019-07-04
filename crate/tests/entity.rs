@@ -2,7 +2,7 @@ extern crate bomberman_wasm;
 
 #[cfg(test)]
 mod test {
-  use bomberman_wasm::geometry::{Direction, Position};
+  use bomberman_wasm::geometry::{Direction, Entity};
   use bomberman_wasm::models::{Tile, Tiles};
 
   struct GameObject {
@@ -15,7 +15,7 @@ mod test {
     }
   }
 
-  impl Position for GameObject {
+  impl Entity for GameObject {
     fn position(&self) -> (f64, f64) {
       self.position
     }
@@ -29,7 +29,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (1.0, 0.0));
   }
 
@@ -38,7 +38,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.1, 0.0);
-    obj.move_in_direction(Direction::Right, 0.1, false, &tiles);
+    obj.move_in_direction(Direction::Right, 0.1, &vec![], &tiles);
     assert_eq!(obj.position(), (0.2, 0.0));
   }
 
@@ -47,7 +47,7 @@ mod test {
     let tiles = vec![Tile::Empty; 6];
     let tiles = Tiles::new(tiles, 3, 2);
     let mut obj = GameObject::new(0.5, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (1.5, 0.0));
   }
 
@@ -56,7 +56,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Left, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Left, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -65,7 +65,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Up, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Up, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -74,7 +74,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(1.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (1.0, 0.0));
   }
 
@@ -83,7 +83,7 @@ mod test {
     let tiles = vec![Tile::Empty; 4];
     let tiles = Tiles::new(tiles, 2, 2);
     let mut obj = GameObject::new(1.0, 1.0);
-    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (1.0, 1.0));
   }
 
@@ -92,7 +92,7 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::HardBlock, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Right, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Right, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -101,7 +101,7 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.5);
-    obj.move_in_direction(Direction::Right, 0.5, false, &tiles);
+    obj.move_in_direction(Direction::Right, 0.5, &vec![], &tiles);
     assert_eq!(obj.position(), (0.0, 0.5));
   }
 
@@ -110,7 +110,7 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.9);
-    obj.move_in_direction(Direction::Right, 0.5, false, &tiles);
+    obj.move_in_direction(Direction::Right, 0.5, &vec![], &tiles);
     assert_eq!(obj.position(), (0.5, 1.0));
   }
 
@@ -119,7 +119,7 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::HardBlock, Tile::HardBlock, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.0, 0.0);
-    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (0.0, 0.0));
   }
 
@@ -128,7 +128,17 @@ mod test {
     let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty];
     let tiles = Tiles::new(tiles, 2, 2);                                         
     let mut obj = GameObject::new(0.5, 0.0);
-    obj.move_in_direction(Direction::Down, 1.0, false, &tiles);
+    obj.move_in_direction(Direction::Down, 1.0, &vec![], &tiles);
     assert_eq!(obj.position(), (0.5, 0.0));
+  }
+
+  #[test]
+  fn object_cannot_move_into_entity_with_collision() {
+    let entities = vec![(1, 0)];
+    let tiles = vec![Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty];
+    let tiles = Tiles::new(tiles, 2, 2);                                         
+    let mut obj = GameObject::new(0.0, 0.0);
+    obj.move_in_direction(Direction::Right, 1.0, &entities, &tiles);
+    assert_eq!(obj.position(), (0.0, 0.0));
   }
 }

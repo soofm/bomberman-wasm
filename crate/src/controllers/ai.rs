@@ -1,15 +1,16 @@
-use crate::models::{Bomb, Explosion, Player, Tile, Tiles, World, EXPLOSION_TIMER};
 use std::cmp;
 use std::collections::HashMap;
 use rand::prelude::*;
 use rand::distributions::WeightedIndex;
+use crate::geometry::Entity;
+use crate::models::{Bomb, Explosion, Player, Tile, Tiles, World, EXPLOSION_TIMER};
 
 const SAFE_TILE: i32 = 999;
 
 pub fn get_accessible_tiles(x: i32, y: i32, tiles: &Tiles) -> HashMap<(i32, i32), (i32, i32)> {
   let mut visited: Vec<bool> = tiles.iter().map(|tile| {
     match tile {
-      Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
+      Tile::SoftBlock | Tile::HardBlock => true,
       _ => false
     }
   }).collect();
@@ -48,14 +49,13 @@ pub fn get_accessible_tiles(x: i32, y: i32, tiles: &Tiles) -> HashMap<(i32, i32)
   result
 }
 
-pub fn eval_bomb_placement<'a, I : Iterator<Item = &'a (i32, i32)>, R: RngCore>(
+pub fn eval_bomb_placement<'a, I: Iterator<Item = &'a (i32, i32)>, R: RngCore>(
   options: I, player: &Player, player_id: usize, world: &World, rng: &mut R) -> bool {
   if player.bomb_number == 0 { return false; }
 
   // When using player bomb power, the AI tends to drop bombs at intersections and trap itself.
   // Only drop bombs directly next to soft blocks.
-  let col = player.x.round() as i32;
-  let row = player.y.round() as i32;
+  let (col, row) = player.current_tile();
   let asb_count = world.tiles.adjacent_soft_block_count(col, row);
   
   // The AI can be more aggressive when targeting players.
@@ -64,8 +64,7 @@ pub fn eval_bomb_placement<'a, I : Iterator<Item = &'a (i32, i32)>, R: RngCore>(
   let mut enemy_in_range = false;
   for (id, enemy) in world.players.iter().enumerate() {
     if id == player_id || !enemy.is_alive { continue; }
-    let col = enemy.x.round() as i32;
-    let row = enemy.y.round() as i32;
+    let (col, row) = enemy.current_tile();
     if (explosion.y == row && (col >= explosion.x - explosion.left && col <= explosion.x + explosion.right)) ||
        (explosion.x == col && (row >= explosion.y - explosion.up && row <= explosion.y + explosion.down)) {
       enemy_in_range = true;
@@ -113,8 +112,7 @@ pub fn eval_tile_safety(world: &World, new_bomb: Option<Bomb>) -> Vec<i32> {
 pub fn choose_option<R: RngCore>(
   accessible_tiles: HashMap<(i32, i32), (i32, i32)>, player: &Player, player_id: usize, world: &World,
   tile_safety: &Vec<i32>, rng: &mut R) -> (i32, i32) {
-  let ocol = player.x.round() as i32;
-  let orow = player.y.round() as i32;
+  let (ocol, orow) = player.current_tile();
 
   if accessible_tiles.keys().len() == 0 { return (ocol, orow); }
 
@@ -141,8 +139,7 @@ pub fn choose_option<R: RngCore>(
       let mut enemy_dist = 0;
       for (id, enemy) in world.players.iter().enumerate() {
         if id == player_id || !enemy.is_alive { continue; }
-        let col = enemy.x.round() as i32;
-        let row = enemy.y.round() as i32;
+        let (col, row) = enemy.current_tile();
         enemy_dist += (option.0 - col).abs() + (option.1 - row).abs();
       }
 
@@ -156,8 +153,7 @@ pub fn choose_option<R: RngCore>(
   let mut enemy_dist = 0;
   for (index, enemy) in world.players.iter().enumerate() {
     if index == player_id { continue; }
-    let col = enemy.x.round() as i32;
-    let row = enemy.y.round() as i32;
+    let (col, row) = enemy.current_tile();
     enemy_dist += (ocol - col).abs() + (orow - row).abs();
   }
   

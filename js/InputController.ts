@@ -25,13 +25,6 @@ export class InputController {
   }
   
   registerInputs(inputOptions: InputOption[]) {
-    if (this.kdEventListener) {
-      window.removeEventListener("keydown", this.kdEventListener)
-    }
-    if (this.kuEventListener) {
-      window.removeEventListener("keyup", this.kuEventListener)
-    }
-
     const inputMapping = new Map<string, { id: number, key: InputType }>()
     inputOptions.forEach((inputOption, id) => {
       inputMapping.set(inputOption.left, { id, key: InputType.Left })
@@ -57,5 +50,14 @@ export class InputController {
       }
     }
     window.addEventListener("keyup", this.kuEventListener)
+  }
+
+  deregisterInputs() {
+    if (this.kdEventListener) {
+      window.removeEventListener("keydown", this.kdEventListener)
+    }
+    if (this.kuEventListener) {
+      window.removeEventListener("keyup", this.kuEventListener)
+    }
   }
 }

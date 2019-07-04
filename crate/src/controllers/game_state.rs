@@ -1,6 +1,6 @@
-use crate::geometry::InRange;
-use crate::models::{Actions, Bomb, Player, Tile, Tiles, World};
 use rand::{Rng, RngCore};
+use crate::geometry::{Entity, InRange};
+use crate::models::{Actions, Bomb, Player, Tile, World};
 
 pub fn update<R: RngCore>(world: &mut World, actions: [Actions; 4], rng: &mut R) {
   // run ticks before any new items are added
@@ -29,12 +29,11 @@ fn update_players(world: &mut World, actions: [Actions; 4]) {
     let dist = player.speed as f64 / 60.0;
     
     if let Some(dir) = action.direction {
-      player.move_in_direction(dir, dist, &world.tiles);
+      player.move_in_direction(dir, dist, &mut world.bombs, &world.tiles);
     }
 
     // detect bomb collisions
-    let col = player.x.round() as i32;
-    let row = player.y.round() as i32;
+    let (col, row) = player.current_tile();
     for explosion in world.explosions.iter() {
       if explosion.y == row && (col >= explosion.x - explosion.left && col <= explosion.x + explosion.right) ||
         explosion.x == col && (row >= explosion.y - explosion.up && row <= explosion.y + explosion.down) {
@@ -42,9 +41,12 @@ fn update_players(world: &mut World, actions: [Actions; 4]) {
       }
     }
 
-    if player.bomb_number > 0 && action.place_bomb && !world.tiles.is_blocked(col, row) {
+    if player.bomb_number > 0 && action.place_bomb && !world.tiles.is_blocked(col, row)
+      && !world.bombs.iter()
+        .map(|bomb| bomb.current_tile())
+        .any(|bomb| bomb.0 == col && bomb.1 == row) {
       player.bomb_number -= 1;
-      add_bomb(&mut world.bombs, &mut world.tiles, player, index);
+      add_bomb(&mut world.bombs, player, index);
     }
 
     let tile = world.tiles.get(col, row);
@@ -54,20 +56,19 @@ fn update_players(world: &mut World, actions: [Actions; 4]) {
   }
 }
 
-fn add_bomb(bombs: &mut Vec<Bomb>, tiles: &mut Tiles, player: &Player, id: usize) {
+fn add_bomb(bombs: &mut Vec<Bomb>, player: &Player, id: usize) {
   let x = player.x.round();
   let y = player.y.round();
   bombs.push(Bomb::new(id, player.bomb_power, x, y));
-  tiles.set(x as i32, y as i32, Tile::Bomb);
 }
 
 fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
+  let current_positions = world.bombs.iter().map(|bomb| bomb.current_tile()).collect();
   for bomb in world.bombs.iter_mut() {
-    let col = bomb.x.round() as i32;
-    let row = bomb.y.round() as i32;
+    let (col, row) = bomb.current_tile();
 
     if let Some(dir) = bomb.direction {
-      bomb.move_in_direction(dir, 0.2, &world.tiles);
+      bomb.move_in_direction(dir, &current_positions, &mut world.tiles);
     }
 
     if bomb.timer == 0 {
@@ -89,8 +90,6 @@ fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
       world.explosions.push(explosion);
 
       world.players[bomb.player_id].bomb_number += 1;
-    } else {
-      break;
     }
   }
 }

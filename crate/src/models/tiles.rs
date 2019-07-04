@@ -40,7 +40,7 @@ impl Tiles {
   pub fn is_blocked(&self, col: i32, row: i32) -> bool {
     if col < 0 || row < 0 || col >= self.width || row >= self.height { return true; }
     match self.get(col, row) {
-      Tile::SoftBlock | Tile::HardBlock | Tile::Bomb => true,
+      Tile::SoftBlock | Tile::HardBlock => true,
       _ => false
     }
   }

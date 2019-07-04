@@ -1,5 +1,5 @@
+use crate::geometry::{Direction, Entity};
 use super::{Explosion, Tile, Tiles};
-use crate::geometry::{Direction, Position};
 
 pub const BOMB_TIMER: i32 = 180;
 
@@ -25,13 +25,16 @@ impl Bomb {
     }
   }
 
-  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, tiles: &Tiles) {
-    Position::move_in_direction(self, dir, dist, false, tiles); 
+  pub fn move_in_direction(&mut self, dir: Direction, entity_positions: &Vec<(i32, i32)>, tiles: &mut Tiles) {
+    let blocked_by_tile = Entity::move_in_direction(self, dir, 0.2, entity_positions, tiles);
+
+    if blocked_by_tile != None {
+      self.direction = None;
+    }
   }
 
   pub fn calc_explosion(&self, tiles: &Tiles) -> Explosion {
-    let col = self.x.round() as i32;
-    let row = self.y.round() as i32;
+    let (col, row) = self.current_tile();
 
     let left = self.calc_explosion_ray(tiles, col, row, -1, 0);
     let right = self.calc_explosion_ray(tiles, col, row, 1, 0);
@@ -62,7 +65,7 @@ impl Bomb {
   }
 }
 
-impl Position for Bomb {
+impl Entity for Bomb {
   fn position(&self) -> (f64, f64) {
     (self.x, self.y)
   }

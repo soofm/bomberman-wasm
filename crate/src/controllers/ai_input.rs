@@ -1,7 +1,7 @@
-use super::ai;
-use crate::geometry::Direction;
-use crate::models::{Actions, Bomb, Player, World};
 use rand::RngCore;
+use super::ai;
+use crate::geometry::{Direction, Entity};
+use crate::models::{Actions, Bomb, Player, World};
 
 #[derive(Default)]
 pub struct AIInput {
@@ -27,8 +27,7 @@ impl AIInput {
       // * Get tile safety matrix with possible new bomb in mind
       // * Rank safe tiles and randomly choose from the best options
       // * Perform moves
-      let col = player.x.round() as i32;
-      let row = player.y.round() as i32;
+      let (col, row) = player.current_tile();
       let accessible_tiles = ai::get_accessible_tiles(col, row, &world.tiles);
       place_bomb = ai::eval_bomb_placement(accessible_tiles.keys(), &player, player_id, world, rng);
       let new_bomb = if place_bomb {

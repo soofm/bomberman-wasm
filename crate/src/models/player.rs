@@ -1,5 +1,5 @@
-use super::{Tile, Tiles};
-use crate::geometry::{Direction, Position};
+use crate::geometry::{Direction, Entity};
+use super::{Bomb, Tile, Tiles};
 
 const MAX_BOMBS: i32 = 9;
 const MAX_POWER: i32 = 9;
@@ -30,8 +30,18 @@ impl Player {
     }
   }
 
-  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, tiles: &Tiles) {
-    Position::move_in_direction(self, dir, dist, self.has_boots, tiles);
+  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, bombs: &mut Vec<Bomb>, tiles: &Tiles) {
+    let entity_positions = bombs.iter().map(|bomb| bomb.current_tile()).collect();
+    let blocked_by_tile = Entity::move_in_direction(self, dir, dist, &entity_positions, tiles);
+    if let Some((col, row)) = blocked_by_tile {
+      if col < 0 || row < 0 || col >= tiles.width || row >= tiles.height { return; }
+      if self.has_boots {
+        let bomb = bombs.iter_mut().find(|bomb| bomb.current_tile() == (col, row));
+        if let Some(bomb) = bomb {
+          bomb.direction = Some(dir);
+        }
+      }
+    }
   }
 
   pub fn apply_powerup(&mut self, tile: Tile) -> bool {
@@ -57,7 +67,7 @@ impl Player {
   }
 }
 
-impl Position for Player {
+impl Entity for Player {
   fn position(&self) -> (f64, f64) {
     (self.x, self.y)
   }

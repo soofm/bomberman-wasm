@@ -206,8 +206,6 @@ export class GraphicsController {
       case Tile.SoftBlock:
         texture = this.loader.resources[Textures.SoftBlock].texture
         break
-      case Tile.Bomb:
-        break
       case Tile.PowerupBombNumber:
         texture = this.loader.resources[Textures.PowerupBombNumber].texture
         break

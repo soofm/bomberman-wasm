@@ -1,10 +1,14 @@
 use crate::models::Tiles;
 use super::{CORNER, Direction};
 
-pub trait Position {
+pub trait Entity {
   fn position(&self) -> (f64, f64);
   fn set_position(&mut self, x: f64, y: f64);
-  fn move_in_direction(&mut self, dir: Direction, dist: f64, can_move_bomb: bool, tiles: &Tiles) {
+  fn current_tile(&self) -> (i32, i32) {
+    let (x, y) = self.position();
+    (x.round() as i32, y.round() as i32)
+  }
+  fn move_in_direction(&mut self, dir: Direction, dist: f64, entity_positions: &Vec<(i32, i32)>, tiles: &Tiles) -> Option<(i32, i32)> {
     let (x, y) = self.position();
     let (a, b, horiz, coef) = match dir {
       Direction::Left => (&x, &y, true, -1.0),
@@ -24,20 +28,16 @@ pub trait Position {
     }
 
     let mut res = (a_adj, *b);
+    let mut blocked_by_tile = None;
     if tari != a_adj as i32 {
       let bf = b.fract();
-      let b_adj = if bf <= CORNER {
-        b.floor()
-      } else if bf >= 1.0 - CORNER {
-        b.ceil()
-      } else {
-        -1.0
-      };
-
-      if b_adj >= 0.0 {
+      if bf <= CORNER || bf >= 1.0 - CORNER {
+        let b_adj = if bf <= CORNER { b.floor() } else { b.ceil() };
         let tile = if horiz { (tari, b_adj as i32) } else { (b_adj as i32, tari) };
-        if !tiles.is_blocked(tile.0, tile.1) {
+        if !tiles.is_blocked(tile.0, tile.1) && !entity_positions.iter().any(|entity| entity.0 == tile.0 && entity.1 == tile.1) {
           res = (tar, b_adj);
+        } else {
+          blocked_by_tile = Some((tile.0, tile.1));
         }
       }
     } else {
@@ -49,5 +49,7 @@ pub trait Position {
     } else {
       self.set_position(res.1, res.0);
     }
+
+    return blocked_by_tile;
   }
 }

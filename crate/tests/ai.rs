@@ -26,8 +26,7 @@ mod test {
   #[test]
   fn eval_tile_safety_works() {
     let tiles = (0..9).map(|i| {
-      if i == 0 { Tile::Bomb }
-      else if i % 3 == 0 || i / 3 == 2 { Tile::Empty }
+      if i % 3 == 0 || i / 3 == 2 { Tile::Empty }
       else { Tile::HardBlock } 
     }).collect();
     let tiles = Tiles::new(tiles, 3, 3);

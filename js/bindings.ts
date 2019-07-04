@@ -35,6 +35,7 @@ const renderLoop = () => {
   
   const state = gameEngine.tick()
   if (state != 0) {
+    inputController.deregisterInputs()
     stopGame(state)
   }
   else {
