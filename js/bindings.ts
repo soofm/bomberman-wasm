@@ -5,7 +5,6 @@ import { InputController, PlayerOneInputOptions, PlayerTwoInputOptions } from ".
 import { GraphicsController } from "./GraphicsController"
 
 const main = <HTMLDivElement>document.getElementById("main")
-const initMenu = <HTMLDivElement>document.getElementById("init-menu")
 const postMenu = <HTMLDivElement>document.getElementById("post-menu")
 const onePlayer = <HTMLButtonElement>document.getElementById("one-player")
 const twoPlayer = <HTMLButtonElement>document.getElementById("two-player")
@@ -25,6 +24,8 @@ const inputController = new InputController(sendInput)
 const graphicsController = new GraphicsController(setup)
 
 const renderLoop = () => {
+  const state = gameEngine.tick()
+  
   const tilesPtr = gameEngine.get_tiles_ptr()
   const tiles = new Uint8Array(memory.buffer, tilesPtr, Constants.Width * Constants.Height)
   graphicsController.renderTiles(tiles)
@@ -33,12 +34,10 @@ const renderLoop = () => {
   gameEngine.render_bombs(graphicsController.addBomb, graphicsController.moveBomb, graphicsController.removeBomb)
   gameEngine.render_explosions(graphicsController.addExplosion, graphicsController.removeExplosion)
   
-  const state = gameEngine.tick()
   if (state != 0) {
     inputController.deregisterInputs()
     stopGame(state)
-  }
-  else {
+  } else {
     animationId = requestAnimationFrame(renderLoop)
   }
 }
@@ -52,17 +51,12 @@ const startGame = (players: number) => {
   const tilesPtr = gameEngine.get_tiles_ptr()
   const tiles = new Uint8Array(memory.buffer, tilesPtr, Constants.Width * Constants.Height)
   graphicsController.init(tiles)
-  if (initMenu.style.visibility !== "hidden") {
-    initMenu.style.visibility = "hidden"
-  }
-  main.style.visibility = "hidden"
-  postMenu.style.visibility = "hidden"
+  main.classList.remove("init", "post")
   renderLoop()
 }
 
 const stopGame = (state: number) => {
-  main.style.visibility = "visible"
-  postMenu.style.visibility = "visible"
+  main.classList.add("post")
   if (state > 0) {
     postMenu.firstElementChild!.textContent = `Player ${state} wins!`
   } else {
