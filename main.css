@@ -33,10 +33,36 @@ a {
 }
 
 #main {
+  visibility: hidden;
   position: absolute;
-  background: #1d0e53 url(88beac79140b08b57e58f9d869137ec4.svg);
   width: 100%;
   height: 100%;
+}
+
+#main.init {
+  visibility: visible;
+  background: rgb(29, 14, 83) url(88beac79140b08b57e58f9d869137ec4.svg);
+}
+
+#init-menu {
+  visibility: hidden;
+}
+
+#main.init #init-menu {
+  visibility: visible;
+}
+
+#main.post {
+  visibility: visible;
+  background: rgba(29, 14, 83, 0.5);
+}
+
+#post-menu {
+  visibility: hidden;
+}
+
+#main.post #post-menu {
+  visibility: visible;
 }
 
 #menu {
