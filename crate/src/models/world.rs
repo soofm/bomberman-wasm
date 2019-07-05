@@ -1,3 +1,4 @@
+use crate::geometry::Entity;
 use super::{Bomb, Explosion, Player, Tiles};
 
 pub struct World {
@@ -15,5 +16,16 @@ impl World {
       bombs: Vec::new(),
       explosions: Vec::new(),
     }
+  }
+
+  pub fn entity_positions(&self) -> Vec<(i32, i32)> {
+    let mut result: Vec<(i32, i32)> = self.players.iter()
+      .filter(|player| player.is_alive)
+      .map(|player| player.current_tile()).collect();
+    for position in self.bombs.iter().map(|bomb| bomb.current_tile()) {
+      result.push(position);
+    }
+
+    result
   }
 }

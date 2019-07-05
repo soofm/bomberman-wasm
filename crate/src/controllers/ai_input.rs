@@ -19,8 +19,8 @@ impl AIInput {
     }
     // Each time the AI runs its evaluation loop, it will decide to either stay put or move one tile in one direction.
     // If it decides to move, it will continue in that direction until it either reaches its destination or it is blocked.
-    else if self.direction == None || world.tiles.is_blocked(self.target.0, self.target.1) ||
-        (player.x - self.target.0 as f64).abs() <= 0.1 && (player.y - self.target.1 as f64).abs() <= 0.1 {
+    else if self.direction == None
+      || (player.x - self.target.0 as f64).abs() <= 0.1 && (player.y - self.target.1 as f64).abs() <= 0.1 {
       // Evaluation loop:
       // * Find all accessible tiles
       // * Check if bomb should be placed at current location
@@ -28,7 +28,8 @@ impl AIInput {
       // * Rank safe tiles and randomly choose from the best options
       // * Perform moves
       let (col, row) = player.current_tile();
-      let accessible_tiles = ai::get_accessible_tiles(col, row, &world.tiles);
+      let entity_positions = world.entity_positions();
+      let accessible_tiles = ai::get_accessible_tiles(col, row, &entity_positions, &world.tiles);
       place_bomb = ai::eval_bomb_placement(accessible_tiles.keys(), &player, player_id, world, rng);
       let new_bomb = if place_bomb {
         Some(Bomb::new(player_id, player.bomb_power, player.x, player.y))

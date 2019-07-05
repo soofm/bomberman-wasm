@@ -23,13 +23,15 @@ pub fn update<R: RngCore>(world: &mut World, actions: [Actions; 4], rng: &mut R)
 }
 
 fn update_players(world: &mut World, actions: [Actions; 4]) {
+  let entity_positions = world.entity_positions();
+
   for (index, (player, action)) in world.players.iter_mut().zip(actions.iter()).enumerate() {
     if !player.is_alive { continue; }
 
     let dist = player.speed as f64 / 60.0;
     
     if let Some(dir) = action.direction {
-      player.move_in_direction(dir, dist, &mut world.bombs, &world.tiles);
+      player.move_in_direction(dir, dist, &entity_positions, &world.tiles, &mut world.bombs);
     }
 
     // detect bomb collisions
@@ -63,16 +65,17 @@ fn add_bomb(bombs: &mut Vec<Bomb>, player: &Player, id: usize) {
 }
 
 fn update_bombs<R: RngCore>(world: &mut World, rng: &mut R) {
-  let current_positions = world.bombs.iter().map(|bomb| bomb.current_tile()).collect();
+  let entity_positions = world.entity_positions();
+
   for bomb in world.bombs.iter_mut() {
     let (col, row) = bomb.current_tile();
 
     if let Some(dir) = bomb.direction {
-      bomb.move_in_direction(dir, &current_positions, &mut world.tiles);
+      bomb.move_in_direction(dir, &entity_positions, &mut world.tiles);
     }
 
     if bomb.timer == 0 {
-      world.tiles.set(col, row, Tile::Empty);
+      if world.tiles.is_blocked(col, row) { world.tiles.set(col, row, Tile::Empty); }
 
       let explosion = bomb.calc_explosion(&world.tiles);
       if explosion.left > 0 && world.tiles.get(col - explosion.left, row) == Tile::SoftBlock {

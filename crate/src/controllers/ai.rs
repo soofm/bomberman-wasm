@@ -7,13 +7,18 @@ use crate::models::{Bomb, Explosion, Player, Tile, Tiles, World, EXPLOSION_TIMER
 
 const SAFE_TILE: i32 = 999;
 
-pub fn get_accessible_tiles(x: i32, y: i32, tiles: &Tiles) -> HashMap<(i32, i32), (i32, i32)> {
+pub fn get_accessible_tiles(x: i32, y: i32, entity_positions: &Vec<(i32, i32)>, tiles: &Tiles) -> HashMap<(i32, i32), (i32, i32)> {
   let mut visited: Vec<bool> = tiles.iter().map(|tile| {
     match tile {
       Tile::SoftBlock | Tile::HardBlock => true,
       _ => false
     }
   }).collect();
+
+  for pos in entity_positions.iter() {
+    visited[(pos.1 * tiles.width + pos.0) as usize] = true;
+  }
+
   let mut queue = Vec::new();
   let mut result: HashMap<(i32, i32), (i32, i32)> = HashMap::new();
   let row_idx = tiles.width as usize;

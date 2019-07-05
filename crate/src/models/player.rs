@@ -30,8 +30,7 @@ impl Player {
     }
   }
 
-  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, bombs: &mut Vec<Bomb>, tiles: &Tiles) {
-    let entity_positions = bombs.iter().map(|bomb| bomb.current_tile()).collect();
+  pub fn move_in_direction(&mut self, dir: Direction, dist: f64, entity_positions: &Vec<(i32, i32)>, tiles: &Tiles, bombs: &mut Vec<Bomb>) {
     let blocked_by_tile = Entity::move_in_direction(self, dir, dist, &entity_positions, tiles);
     if let Some((col, row)) = blocked_by_tile {
       if col < 0 || row < 0 || col >= tiles.width || row >= tiles.height { return; }
